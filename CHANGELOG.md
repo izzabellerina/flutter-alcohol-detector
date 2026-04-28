@@ -8,9 +8,34 @@
 ## [Unreleased]
 
 ### Planned
-- เพิ่มฟีเจอร์ตรวจจับระดับแอลกอฮอล์
-- เชื่อมต่อกับเซ็นเซอร์ผ่าน Bluetooth
-- หน้าแสดงผลและประวัติการตรวจวัด
+- Phase 2: Authentication Flow (OTP via SMS/Email, Reset Password)
+- Phase 3: เชื่อมต่ออุปกรณ์ (เครื่องเป่าแอลกอฮอล์ + เครื่องอ่านใบขับขี่)
+- Phase 4: ยืนยันข้อมูลผู้ขับขี่
+- Phase 5: หน้าทดสอบ + Face Detection + บันทึกผล
+
+## [1.1.0] - 2026-04-28 (Phase 1: Foundation)
+
+### Added
+- เพิ่ม dependencies: `go_router` (routing), `intl` (จัด format วันที่ พ.ศ.)
+- ตั้งโครงสร้างโฟลเดอร์: `lib/core` (theme, constants, utils), `lib/widgets/common`, `lib/screens`, `lib/routes`, `lib/models`, `lib/services`
+- ระบบ Theme & Color Palette (`AppColors`, `AppTextStyles`, `AppTheme`) ตาม Mockup
+- ค่าคงที่กลาง `AppConstants` (ชื่อแอป, เวอร์ชัน, threshold 3 mg%, OTP expiry 5 นาที)
+- `DateFormatter` สำหรับ format วันที่/เวลาเป็น พ.ศ. และตัวจับเวลา OTP
+- Common Widgets:
+  - `AppLogo` — โลโก้ + ชื่อระบบ
+  - `AppButton` (primary / danger / secondary / outline) พร้อม loading state และ icon
+  - `AppHeader` — แถบทักทายผู้ใช้พร้อมวันที่/เวลา + เลขใบขับขี่ + Device ID
+  - `AppFooter` — แสดง Version
+  - `AppScaffold` — Scaffold มาตรฐานพร้อม Header/Footer
+- ระบบ Routing ด้วย `go_router` (`AppRoutes`, `AppRouter`)
+- หน้า Placeholder: `LoginScreen`, `ForgotPasswordScreen`, `HomeScreen`
+- ปรับ `main.dart` ให้ใช้ Theme + Router ใหม่
+- อัปเดต widget test ให้ตรงกับโครงสร้างแอปใหม่
+
+### Changed
+- เปลี่ยนชื่อ root widget จาก `MyApp` เป็น `AlcoholDetectorApp`
+
+## [1.0.0] - 2026-04-28
 
 ## [1.0.0] - 2026-04-28
 
