@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/common/app_buttons.dart';
 import '../../widgets/common/app_footer.dart';
-import '../../widgets/common/app_logo.dart';
+import '../../widgets/common/auth_background.dart';
+import '../../widgets/common/auth_step_indicator.dart';
+import '../../widgets/common/password_strength_meter.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -22,6 +26,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool _obscureNew = true;
   bool _obscureRe = true;
   bool _isSubmitting = false;
+  String _newPassword = '';
+  String _rePassword = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _newPasswordController.addListener(() {
+      setState(() => _newPassword = _newPasswordController.text);
+    });
+    _rePasswordController.addListener(() {
+      setState(() => _rePassword = _rePasswordController.text);
+    });
+  }
 
   @override
   void dispose() {
@@ -68,66 +85,140 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final passwordsMatch = _newPassword.isNotEmpty &&
+        _newPassword == _rePassword;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         title: Text('ตั้งรหัสใหม่', style: AppTextStyles.headingSmall),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                const Spacer(),
-                const AppLogo(),
-                const SizedBox(height: 40),
-                TextFormField(
-                  controller: _newPasswordController,
-                  obscureText: _obscureNew,
-                  validator: _validateNewPassword,
-                  decoration: InputDecoration(
-                    hintText: 'New Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureNew ? Icons.visibility_off : Icons.visibility,
-                        color: AppColors.textSecondary,
-                      ),
-                      onPressed: () =>
-                          setState(() => _obscureNew = !_obscureNew),
+      extendBodyBehindAppBar: true,
+      body: AuthBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  const SizedBox(height: AppSpacing.lg),
+                  const AuthStepIndicator(
+                    currentStep: 3,
+                    totalSteps: 3,
+                    label: 'ตั้งรหัสใหม่',
+                  ),
+                  const SizedBox(height: AppSpacing.xxl),
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary50,
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.shield_outlined,
+                      size: 40,
+                      color: AppColors.primary600,
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _rePasswordController,
-                  obscureText: _obscureRe,
-                  validator: _validateRePassword,
-                  decoration: InputDecoration(
-                    hintText: 'Re Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureRe ? Icons.visibility_off : Icons.visibility,
-                        color: AppColors.textSecondary,
-                      ),
-                      onPressed: () =>
-                          setState(() => _obscureRe = !_obscureRe),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    'ตั้งรหัสผ่านใหม่',
+                    style: AppTextStyles.headingMedium,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    'รหัสผ่านควรมีอย่างน้อย 8 ตัวอักษร ผสมตัวพิมพ์ใหญ่ ตัวเลข และอักขระพิเศษ',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                AppButton.primary(
-                  label: 'บันทึก',
-                  onPressed: _isSubmitting ? null : _submit,
-                  isLoading: _isSubmitting,
-                ),
-                const Spacer(),
-                const AppFooter(),
-              ],
+                  const SizedBox(height: AppSpacing.xxl),
+                  TextFormField(
+                    controller: _newPasswordController,
+                    obscureText: _obscureNew,
+                    validator: _validateNewPassword,
+                    decoration: InputDecoration(
+                      labelText: 'รหัสผ่านใหม่',
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: AppColors.textSecondary,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureNew
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: AppColors.textSecondary,
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscureNew = !_obscureNew),
+                      ),
+                      floatingLabelStyle: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.primary700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  PasswordStrengthMeter(password: _newPassword),
+                  const SizedBox(height: AppSpacing.md),
+                  TextFormField(
+                    controller: _rePasswordController,
+                    obscureText: _obscureRe,
+                    validator: _validateRePassword,
+                    decoration: InputDecoration(
+                      labelText: 'ยืนยันรหัสผ่าน',
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: AppColors.textSecondary,
+                      ),
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_rePassword.isNotEmpty)
+                            Icon(
+                              passwordsMatch
+                                  ? Icons.check_circle
+                                  : Icons.cancel_outlined,
+                              size: 20,
+                              color: passwordsMatch
+                                  ? AppColors.primary500
+                                  : AppColors.danger500,
+                            ),
+                          IconButton(
+                            icon: Icon(
+                              _obscureRe
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: AppColors.textSecondary,
+                            ),
+                            onPressed: () =>
+                                setState(() => _obscureRe = !_obscureRe),
+                          ),
+                        ],
+                      ),
+                      floatingLabelStyle: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.primary700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                  AppButton.primary(
+                    label: 'บันทึก',
+                    icon: Icons.save_outlined,
+                    onPressed: _isSubmitting ? null : _submit,
+                    isLoading: _isSubmitting,
+                  ),
+                  const SizedBox(height: AppSpacing.xxl),
+                  const AppFooter(),
+                ],
+              ),
             ),
           ),
         ),

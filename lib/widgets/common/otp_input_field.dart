@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_text_styles.dart';
 
 class OtpInputField extends StatefulWidget {
@@ -30,6 +32,9 @@ class _OtpInputFieldState extends State<OtpInputField> {
     super.initState();
     _controllers = List.generate(widget.length, (_) => TextEditingController());
     _focusNodes = List.generate(widget.length, (_) => FocusNode());
+    for (final node in _focusNodes) {
+      node.addListener(() => setState(() {}));
+    }
   }
 
   @override
@@ -78,9 +83,25 @@ class _OtpInputFieldState extends State<OtpInputField> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(widget.length, (index) {
+        final hasValue = _controllers[index].text.isNotEmpty;
+        final isActive = _focusNodes[index].hasFocus;
+
+        Color borderColor;
+        double borderWidth;
+        if (isActive) {
+          borderColor = AppColors.primary500;
+          borderWidth = 2;
+        } else if (hasValue) {
+          borderColor = AppColors.primary200;
+          borderWidth = 1.5;
+        } else {
+          borderColor = AppColors.neutral200;
+          borderWidth = 1;
+        }
+
         return SizedBox(
-          width: 48,
-          height: 56,
+          width: 52,
+          height: 60,
           child: KeyboardListener(
             focusNode: FocusNode(),
             onKeyEvent: (event) {
@@ -89,39 +110,48 @@ class _OtpInputFieldState extends State<OtpInputField> {
                 _handleBackspace(index);
               }
             },
-            child: TextField(
-              controller: _controllers[index],
-              focusNode: _focusNodes[index],
-              enabled: widget.enabled,
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              maxLength: 1,
-              style: AppTextStyles.headingMedium,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-              decoration: InputDecoration(
-                counterText: '',
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                fillColor: AppColors.surfaceVariant,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: AppColors.border),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: AppColors.border),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: AppColors.primary,
-                    width: 2,
-                  ),
-                ),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              decoration: BoxDecoration(
+                color: hasValue
+                    ? AppColors.primary50
+                    : AppColors.neutral50,
+                borderRadius: AppRadius.all(AppRadius.md),
+                border: Border.all(color: borderColor, width: borderWidth),
+                boxShadow: isActive
+                    ? [
+                        BoxShadow(
+                          color: AppColors.primary500.withValues(alpha: 0.15),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                    : null,
               ),
-              onChanged: (value) => _handleChange(index, value),
+              child: TextField(
+                controller: _controllers[index],
+                focusNode: _focusNodes[index],
+                enabled: widget.enabled,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                maxLength: 1,
+                style: AppTextStyles.headingMedium.copyWith(
+                  color: AppColors.primary700,
+                  fontWeight: FontWeight.bold,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                decoration: const InputDecoration(
+                  counterText: '',
+                  contentPadding: EdgeInsets.zero,
+                  filled: false,
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                ),
+                onChanged: (value) => _handleChange(index, value),
+              ),
             ),
           ),
         );
