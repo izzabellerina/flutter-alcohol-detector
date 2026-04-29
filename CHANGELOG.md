@@ -8,11 +8,41 @@
 ## [Unreleased]
 
 ### Planned
-- Phase UI-4: Test flow polish (radial progress, wave animation, animated reveal)
 - Phase UI-5: Micro-interactions (flutter_animate, lottie, shimmer, haptics)
 - Phase UI-6: Accessibility & QA (a11y, contrast, font scaling, dark mode review)
 - Phase 6: เปลี่ยน Mock services เป็น implementation จริง
   (Bluetooth/USB, Camera+ML Kit, API)
+
+## [1.9.0] - 2026-04-30 (Phase UI-4: Test Flow Polish)
+
+### Changed
+- **FaceFramePreview** ขยับตัวแบบ animated:
+  - Breathing pulse (scale 1.0 → 1.04) เมื่อใบหน้าอยู่ในกรอบ
+  - Shake animation + กรอบแดง + glow แดงเมื่อใบหน้าออกจากกรอบ
+  - Background radial gradient + ใบหน้า silhouette ใหญ่ขึ้น
+  - กรอบ rounded ขนาดใหญ่ + glow ตามสีกรอบ
+  - Warning badge มี shadow และไอคอน warning
+- **TestReadyScreen** ออกแบบใหม่:
+  - Hero icon breathing animation (radial gradient + pulsing glow)
+  - Checklist 4 ข้อ (เป่ายาว 5s, อยู่ในกรอบ, ห้ามถอด, หายใจลึก) ใน AppCard
+  - ปุ่มเริ่ม gradient + arrow icon
+- **TestInProgressScreen**:
+  - **Countdown overlay 3-2-1** ก่อนเริ่มจริง (gradient circle + scale animation)
+  - **_BreathingProgress**: ring กลางใหญ่ + 3 wave rings ขยายออก animated
+    + center label box พร้อม shadow + percent ใหญ่
+  - **_StatusText**: animated transition (fade + slide) + icon ตามเฟส
+  - ลบ AppRadius import ที่ไม่ได้ใช้
+- **TestResultScreen**:
+  - **_ResultBadge** animated reveal (scale 0.6 → 1.0 + easeOutBack)
+    + gradient background + glow
+    + caption ใต้ผลลัพธ์ ("พร้อมขับขี่ได้" / "กรุณาพักรถ")
+  - **_MeasurementCard** ใหม่: icon + value ใหญ่ + mini bar chart
+    พร้อม threshold marker (เส้นเหลือง 0.5 position)
+  - **_FaceMismatchNote** เป็นการ์ดมีไอคอน + คำอธิบาย
+  - **_ThresholdNote** สีเหลืองอ่อนพร้อมไอคอน
+  - **_SaveStatusBanner** animated switch ระหว่าง loading/done
+  - **_FinishButton** gradient + home icon
+- บัมป์ pubspec version → `1.9.0+1` + อัปเดต `_versionUpdatedAt`
 
 ## [1.8.0] - 2026-04-29 (Phase UI-3: Home & Driver Dashboard Cards)
 
