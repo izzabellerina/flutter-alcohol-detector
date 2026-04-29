@@ -4,7 +4,9 @@ import '../screens/auth/forgot_password_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/otp_verification_screen.dart';
 import '../screens/auth/reset_password_screen.dart';
+import '../screens/home/driver_confirmation_screen.dart';
 import '../screens/home/home_screen.dart';
+import '../services/card_reader_service.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -62,6 +64,17 @@ class AppRouter {
         path: AppRoutes.home,
         name: 'home',
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.driverConfirm,
+        name: 'driverConfirm',
+        builder: (context, state) {
+          final driver = state.extra as DriverInfo?;
+          if (driver == null) {
+            return const HomeScreen();
+          }
+          return DriverConfirmationScreen(driver: driver);
+        },
       ),
     ],
   );

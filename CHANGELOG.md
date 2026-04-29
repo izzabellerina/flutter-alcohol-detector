@@ -8,10 +8,29 @@
 ## [Unreleased]
 
 ### Planned
-- Phase 4: ยืนยันข้อมูลผู้ขับขี่ (อ่านใบขับขี่ + หน้ายืนยันข้อมูล + Error states)
 - Phase 5: หน้าทดสอบ + Face Detection + บันทึกผล
 - เปลี่ยน Mock services เป็น implementation จริง (Bluetooth/USB Serial)
 - เชื่อมต่อ API จริงใน Auth flow (ปัจจุบันยัง mock อยู่)
+
+## [1.4.0] - 2026-04-29 (Phase 4: Driver Verification)
+
+### Added
+- เพิ่ม `MockCardReadScenario` enum (success / notFound / invalidNumber / mismatch) สลับ scenario ทดสอบ flow ต่าง ๆ ได้
+- เพิ่ม `CardReadErrorType` enum + `CardReadException` มี `type` และ `detail` ประกอบ
+- เพิ่ม `DriverInfo.maskedLicenseNumber` getter (เช่น "591100" → "59xxx00")
+- หน้า `DriverConfirmationScreen`: แสดง license plate + ชื่อผู้ขับขี่ + เลขใบขับขี่ พร้อมปุ่ม "ยืนยันข้อมูล" / "ข้อมูลไม่ถูกต้อง"
+- Route `/driver-confirm` รับ `DriverInfo` ผ่าน `extra`
+- ใน `DeviceController`:
+  - `confirmedDriver`, `cardReadError`, `isReadingCard` getters
+  - `readDriverCard()` คืน `DriverInfo?` (null เมื่อ error, error เก็บใน `cardReadError`)
+  - `confirmDriver()` / `rejectDriver()` / `clearCardReadError()`
+  - `isReadyForTest` ตอนนี้ต้อง alcohol device + confirmed driver ทั้งคู่
+
+### Changed
+- `HomeScreen` แสดงปุ่ม "รูดใบขับขี่" หลังเชื่อมต่อเครื่องอ่าน, แสดง:
+  - Banner เขียวเมื่อยืนยันใบขับขี่แล้ว (พร้อมปุ่มรูดบัตรใหม่)
+  - Banner แดงเมื่อ card read ผิดพลาด พร้อมปุ่ม "ลองอีกครั้ง"
+- ตัด `readDriverCard()` แบบ pass-through เก่าใน controller — แทนด้วย flow จัดการ state เต็มรูปแบบ
 
 ## [1.3.0] - 2026-04-29 (Phase 3: Device Integration)
 
