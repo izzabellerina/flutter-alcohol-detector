@@ -8,9 +8,40 @@
 ## [Unreleased]
 
 ### Planned
-- Phase 5: หน้าทดสอบ + Face Detection + บันทึกผล
-- เปลี่ยน Mock services เป็น implementation จริง (Bluetooth/USB Serial)
-- เชื่อมต่อ API จริงใน Auth flow (ปัจจุบันยัง mock อยู่)
+- Phase 6: Polish & QA (ทดสอบ flow ทุกกรณี + ปรับ UI/UX + ทดสอบบนอุปกรณ์จริง)
+- เปลี่ยน Mock services เป็น implementation จริง:
+  - Bluetooth/USB Serial สำหรับเครื่องเป่าและเครื่องอ่านบัตร
+  - Camera + google_mlkit_face_detection สำหรับตรวจจับใบหน้า
+  - API จริงสำหรับ Auth flow + บันทึกผลทดสอบ
+
+## [1.5.0] - 2026-04-29 (Phase 5: Test Flow + Result)
+
+### Added
+- Models: `TestPhase`, `TestOutcome`, `TestMeasurement`, `TestResult`, `TestSession`, `MockTestScenario`
+- `TestRepository` (abstract) + `InMemoryTestRepository` (mock เก็บใน memory)
+- `TestController` (ChangeNotifier) ควบคุม flow การทดสอบ:
+  - เฟส 1: วัดอากาศ baseline (~1.2s)
+  - เฟส 2: เป่าจริง — progress 0% → 100% ภายใน ~5 วินาที
+  - หยุดนับเวลาเมื่อใบหน้าออกจากกรอบ (resume เมื่อกลับเข้ามา)
+  - บันทึก session อัตโนมัติเมื่อเสร็จ
+  - มี `nextScenario` สำหรับสลับผลลัพธ์ (pass / failAlcohol / failFaceMismatch)
+- Common Widget: `FaceFramePreview` — mock camera พร้อมกรอบใบหน้า
+  (เปลี่ยนสีกรอบเขียว/แดงตามสถานะ + แสดงป้าย "ขยับใบหน้าให้อยู่ในกรอบ")
+- หน้า `TestReadyScreen` — หน้าก่อนเริ่ม กดเริ่ม/ยกเลิก
+- หน้า `TestInProgressScreen` — Face frame + Status + Circular Progress (%)
+  + ปุ่มจำลองสลับสถานะใบหน้าในกรอบ (ใช้ทดสอบโดยไม่มีกล้อง)
+- หน้า `TestResultScreen` — Badge ผ่าน/ไม่ผ่าน + การ์ดวัดอากาศ/ผู้เป่า
+  + threshold + สถานะการบันทึกผล + ปุ่ม "จบการทดสอบ"
+- เพิ่ม Routes: `/test/ready`, `/test/in-progress`, `/test/complete`
+
+### Changed
+- เพิ่ม `TestController` ใน `MultiProvider` ของ `main.dart`
+
+### Notes
+- กล้องจริงและ face detection ยังเป็น mock — implementation จริง
+  (`camera` + `google_mlkit_face_detection`) จะมาทดแทนตอนทดสอบบนอุปกรณ์จริง
+- `InMemoryTestRepository` ยังไม่ persist ข้อมูลระหว่าง session ของแอป
+  (Phase 6+ จะเปลี่ยนเป็น API/SQLite)
 
 ## [1.4.0] - 2026-04-29 (Phase 4: Driver Verification)
 
