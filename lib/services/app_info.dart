@@ -2,7 +2,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 /// **อัปเดตค่านี้ทุกครั้งที่บัมป์ `version` ใน `pubspec.yaml`**
 /// ใช้แสดง "อัปเดตเมื่อ ..." ใน footer ของแอป
-final DateTime _versionUpdatedAt = DateTime(2026, 4, 29, 21, 0);
+final DateTime _versionUpdatedAt = DateTime(2026, 4, 29, 22, 30);
 
 class AppInfo {
   const AppInfo({

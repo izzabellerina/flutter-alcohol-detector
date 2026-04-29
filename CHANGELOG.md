@@ -8,13 +8,53 @@
 ## [Unreleased]
 
 ### Planned
-- Phase UI-2: Auth screens polish (gradient bg, floating labels, OTP polish, password strength meter)
 - Phase UI-3: Home & Driver dashboard cards
 - Phase UI-4: Test flow polish (radial progress, wave animation, animated reveal)
 - Phase UI-5: Micro-interactions (flutter_animate, lottie, shimmer, haptics)
 - Phase UI-6: Accessibility & QA (a11y, contrast, font scaling, dark mode review)
 - Phase 6: เปลี่ยน Mock services เป็น implementation จริง
   (Bluetooth/USB, Camera+ML Kit, API)
+
+## [1.7.0] - 2026-04-29 (Phase UI-2: Auth Screens Polish)
+
+### Added
+- Common Widgets ใหม่:
+  - `AuthBackground` — gradient อ่อน ๆ (primary50 → background) ใช้ร่วม 4 หน้า auth
+  - `AuthStepIndicator` — แสดง "ขั้นตอนที่ X จาก Y" + แถบสีบ่งชี้
+  - `CountdownRing` — circular progress + เวลาตรงกลาง
+    เปลี่ยนสี (เขียว → เหลือง < 30s → แดงตอนหมดอายุ)
+  - `PasswordStrengthMeter` — 4 segments + label ความแข็งแรง
+    (เปล่า/อ่อน/พอใช้/แข็งแรง/แข็งแรงมาก) อิงจาก length, uppercase, digit, special
+
+### Changed
+- **Login Screen**:
+  - เพิ่ม gradient background
+  - ใช้ floating label แทน hint
+  - prefix icon ในช่อง username/password
+  - ปุ่ม "เข้าสู่ระบบ" เป็น gradient + arrow icon + soft shadow
+  - "ลืมรหัสผ่าน?" ขีดเส้นใต้ + สีแบรนด์
+- **ForgotPassword Screen**:
+  - Step 1/3 + label "ระบุช่องทาง"
+  - Hero icon (lock_reset) + พื้นหลัง gradient
+  - คำอธิบายชัดเจนขึ้น
+  - TextField floating label + prefix icon
+- **OTP Screen**:
+  - Step 2/3 + label "ยืนยัน OTP"
+  - `CountdownRing` ใหญ่ขึ้นด้านบน
+  - Destination card รวบรวมข้อมูลปลายทาง + รหัสอ้างอิงเป็น chip
+  - หมายเหตุอีเมลขยะอยู่ในการ์ดเดียวกัน
+- **ResetPassword Screen**:
+  - Step 3/3 + label "ตั้งรหัสใหม่"
+  - Hero icon (shield) + คำแนะนำ
+  - Floating label + prefix icon ทั้งสองช่อง
+  - `PasswordStrengthMeter` ใต้ช่องรหัสใหม่
+  - ไอคอน check / cancel ในช่อง re-password เมื่อพิมพ์ตรง/ไม่ตรง
+- **OtpInputField**:
+  - กล่องใหญ่ขึ้น (52×60) + รัศมีมุมโค้ง 12px
+  - Active: primary border 2px + soft shadow
+  - Filled: primary50 background + primary200 border
+  - ตัวเลขใหญ่และเข้ม (primary700)
+- บัมป์ pubspec version → `1.7.0+1` + อัปเดต `_versionUpdatedAt`
 
 ## [1.6.0] - 2026-04-29 (Phase UI-1: Foundation)
 

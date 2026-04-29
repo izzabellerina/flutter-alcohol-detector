@@ -2,15 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_radius.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../core/utils/date_formatter.dart';
 import '../../models/auth_models.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/common/app_buttons.dart';
 import '../../widgets/common/app_footer.dart';
-import '../../widgets/common/app_logo.dart';
+import '../../widgets/common/auth_background.dart';
+import '../../widgets/common/auth_step_indicator.dart';
+import '../../widgets/common/countdown_ring.dart';
 import '../../widgets/common/otp_input_field.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
@@ -78,89 +82,170 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
-        title: Text('ลืมรหัสผ่าน', style: AppTextStyles.headingSmall),
+        title: Text('ยืนยัน OTP', style: AppTextStyles.headingSmall),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const SizedBox(height: 24),
-              const AppLogo(),
-              const SizedBox(height: 32),
-              Text(
-                'OTP ถูกส่งไปยัง${widget.request.destinationLabel}',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMedium,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'รหัส OTP ของคุณมีอายุ 5 นาที หลังจากที่คุณได้รับรหัส',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodySmall,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'รหัสอ้างอิง: ${widget.request.referenceCode}',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodySmall,
-              ),
-              if (extraNote != null) ...[
-                const SizedBox(height: 8),
+      extendBodyBehindAppBar: true,
+      body: AuthBackground(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+            child: Column(
+              children: [
+                const SizedBox(height: AppSpacing.lg),
+                const AuthStepIndicator(
+                  currentStep: 2,
+                  totalSteps: 3,
+                  label: 'ยืนยัน OTP',
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                CountdownRing(
+                  secondsLeft: _secondsLeft,
+                  totalSeconds: AppConstants.otpExpirySeconds,
+                  size: 110,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                _DestinationCard(
+                  isPhone: isPhone,
+                  destinationLabel: widget.request.destinationLabel,
+                  referenceCode: widget.request.referenceCode,
+                  extraNote: extraNote,
+                ),
+                const SizedBox(height: AppSpacing.xl),
                 Text(
-                  extraNote,
-                  textAlign: TextAlign.center,
+                  'กรอก OTP ที่ได้รับจาก ${isPhone ? 'SMS' : 'Email'}',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                OtpInputField(
+                  onChanged: (value) => setState(() => _otp = value),
+                  onCompleted: (_) => _verifyOtp(),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                AppButton.primary(
+                  label: 'ยืนยัน OTP',
+                  icon: Icons.verified_outlined,
+                  onPressed: _otp.length == 6 && _secondsLeft > 0
+                      ? _verifyOtp
+                      : null,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                TextButton.icon(
+                  onPressed: _resendOtp,
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: Text(
+                    'ขอรหัสใหม่อีกครั้ง',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.primary700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                const AppFooter(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DestinationCard extends StatelessWidget {
+  const _DestinationCard({
+    required this.isPhone,
+    required this.destinationLabel,
+    required this.referenceCode,
+    this.extraNote,
+  });
+
+  final bool isPhone;
+  final String destinationLabel;
+  final String referenceCode;
+  final String? extraNote;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.all(AppRadius.lg),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                isPhone ? Icons.sms_outlined : Icons.email_outlined,
+                size: 18,
+                color: AppColors.primary600,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  'ส่ง OTP ไปยัง$destinationLabel',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              Text('รหัสอ้างอิง: ', style: AppTextStyles.bodySmall),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary50,
+                  borderRadius: AppRadius.all(AppRadius.sm),
+                ),
+                child: Text(
+                  referenceCode,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.warning,
+                    color: AppColors.primary700,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (extraNote != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              children: [
+                const Icon(
+                  Icons.info_outline,
+                  size: 14,
+                  color: AppColors.warning500,
+                ),
+                const SizedBox(width: AppSpacing.xs + 2),
+                Expanded(
+                  child: Text(
+                    extraNote!,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.warning700,
+                    ),
                   ),
                 ),
               ],
-              const SizedBox(height: 24),
-              Text(
-                'กรอก OTP ที่ได้รับจาก ${isPhone ? 'SMS' : 'Email'}',
-                style: AppTextStyles.bodyMedium,
-              ),
-              const SizedBox(height: 12),
-              OtpInputField(
-                onChanged: (value) => setState(() => _otp = value),
-                onCompleted: (_) => _verifyOtp(),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _secondsLeft > 0
-                    ? 'ยืนยัน OTP ใน ${DateFormatter.formatCountdown(_secondsLeft)}'
-                    : 'รหัส OTP หมดอายุแล้ว',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: _secondsLeft > 0
-                      ? AppColors.textPrimary
-                      : AppColors.danger,
-                ),
-              ),
-              const SizedBox(height: 16),
-              AppButton.primary(
-                label: 'ยืนยัน OTP',
-                onPressed: _otp.length == 6 && _secondsLeft > 0
-                    ? _verifyOtp
-                    : null,
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: _resendOtp,
-                child: Text(
-                  'ขอรหัสใหม่อีกครั้ง',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              const AppFooter(),
-            ],
-          ),
-        ),
+            ),
+          ],
+        ],
       ),
     );
   }

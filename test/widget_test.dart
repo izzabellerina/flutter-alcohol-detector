@@ -15,7 +15,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('เข้าสู่ระบบ'), findsOneWidget);
-    expect(find.text('ลืมรหัสผ่าน'), findsOneWidget);
+    expect(find.text('ลืมรหัสผ่าน?'), findsOneWidget);
     expect(find.text('Version 1.0.0+1'), findsOneWidget);
     expect(
       find.text('อัปเดตเมื่อ 29 เมษายน 2569 เวลา 17.00 น.'),
