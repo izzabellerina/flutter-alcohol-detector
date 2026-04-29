@@ -8,11 +8,38 @@
 ## [Unreleased]
 
 ### Planned
-- Phase 6: Polish & QA (ทดสอบ flow ทุกกรณี + ปรับ UI/UX + ทดสอบบนอุปกรณ์จริง)
-- เปลี่ยน Mock services เป็น implementation จริง:
-  - Bluetooth/USB Serial สำหรับเครื่องเป่าและเครื่องอ่านบัตร
-  - Camera + google_mlkit_face_detection สำหรับตรวจจับใบหน้า
-  - API จริงสำหรับ Auth flow + บันทึกผลทดสอบ
+- Phase UI-2: Auth screens polish (gradient bg, floating labels, OTP polish, password strength meter)
+- Phase UI-3: Home & Driver dashboard cards
+- Phase UI-4: Test flow polish (radial progress, wave animation, animated reveal)
+- Phase UI-5: Micro-interactions (flutter_animate, lottie, shimmer, haptics)
+- Phase UI-6: Accessibility & QA (a11y, contrast, font scaling, dark mode review)
+- Phase 6: เปลี่ยน Mock services เป็น implementation จริง
+  (Bluetooth/USB, Camera+ML Kit, API)
+
+## [1.6.0] - 2026-04-29 (Phase UI-1: Foundation)
+
+### Added
+- เพิ่ม dependency `google_fonts ^6.2.1` — โหลดฟอนต์ Sarabun จริง
+- `AppSpacing` tokens (`xs/sm/md/lg/xl/xxl/xxxl` = 4/8/12/16/24/32/48)
+- `AppRadius` tokens (`sm/md/lg/xl/pill` = 8/12/16/24/999)
+- `AppColors` ขยายเป็น tint/shade scale: `primary`, `danger`, `info`, `warning`, `neutral`
+  (เช่น `primary50`, `primary500`, `primary700` ฯลฯ)
+- เพิ่ม dark mode tokens (`darkBackground`, `darkSurface`, ฯลฯ)
+- `AppTheme.dark` — โครงสร้างพร้อมใช้ (เปิดใช้งานจริงใน UI ระยะหลัง)
+
+### Changed
+- `AppTextStyles` ใช้ `GoogleFonts.sarabun()` แทน fontFamily อ้างอิงเฉย ๆ
+  + ขยาย type scale: display L/M, heading L/M/S, body L/M/S, label, caption
+- `AppTheme` แยกเป็น `_build()` ใช้ร่วมกัน light/dark
+- `MaterialApp` รองรับ `darkTheme` + `themeMode: light` (ตั้งคงที่ไว้ก่อน
+  รอ migrate screens ใช้ ColorScheme เต็มตัวใน UI ระยะหลัง)
+- **`AppLogo`** ปรับเป็น gradient + icon แทนกล่อง "Logo" เดิม
+  พร้อม shadow soft brand color
+- **`AppHeader`** ยกเครื่องใหม่:
+  - แถบบนใช้ gradient น้ำเงินเข้ม (info700 → info900)
+  - แถบล่างมี avatar (initials) + greeting + chips สำหรับใบขับขี่/Device
+  - ขอบบนของส่วนล่างโค้งมน 24px ดู modern
+- บัมป์ pubspec version → `1.6.0+1` พร้อมอัปเดต `_versionUpdatedAt`
 
 ## [1.5.1] - 2026-04-29
 

@@ -1,80 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'app_colors.dart';
 
+/// ใช้ GoogleFonts.sarabun() — รองรับน้ำหนัก 100-800
+/// ครั้งแรกจะดาวน์โหลด font แล้ว cache ไว้ใน device
 class AppTextStyles {
   AppTextStyles._();
 
-  static const String fontFamily = 'Sarabun';
+  static TextStyle _base(
+    double size,
+    FontWeight weight, {
+    Color color = AppColors.textPrimary,
+    double? height,
+    double letterSpacing = 0,
+  }) {
+    return GoogleFonts.sarabun(
+      fontSize: size,
+      fontWeight: weight,
+      color: color,
+      height: height,
+      letterSpacing: letterSpacing,
+    );
+  }
 
-  static const TextStyle displayLarge = TextStyle(
-    fontSize: 32,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-  );
+  // ── Display ──────────────────────────────────────────────────
+  static TextStyle get displayLarge =>
+      _base(40, FontWeight.bold, height: 1.2);
+  static TextStyle get displayMedium =>
+      _base(32, FontWeight.bold, height: 1.2);
 
-  static const TextStyle headingLarge = TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-  );
+  // ── Heading ──────────────────────────────────────────────────
+  static TextStyle get headingLarge =>
+      _base(24, FontWeight.bold, height: 1.3);
+  static TextStyle get headingMedium =>
+      _base(20, FontWeight.w600, height: 1.3);
+  static TextStyle get headingSmall =>
+      _base(18, FontWeight.w600, height: 1.4);
 
-  static const TextStyle headingMedium = TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-  );
+  // ── Body ─────────────────────────────────────────────────────
+  static TextStyle get bodyLarge =>
+      _base(16, FontWeight.normal, height: 1.5);
+  static TextStyle get bodyMedium =>
+      _base(14, FontWeight.normal, height: 1.5);
+  static TextStyle get bodySmall => _base(
+        12,
+        FontWeight.normal,
+        height: 1.5,
+        color: AppColors.textSecondary,
+      );
 
-  static const TextStyle headingSmall = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-  );
+  // ── Label / Button ───────────────────────────────────────────
+  static TextStyle get button => _base(
+        16,
+        FontWeight.w600,
+        color: AppColors.textOnPrimary,
+        letterSpacing: 0.2,
+      );
+  static TextStyle get label =>
+      _base(13, FontWeight.w500, height: 1.4);
 
-  static const TextStyle bodyLarge = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-  );
+  // ── Misc ─────────────────────────────────────────────────────
+  static TextStyle get caption =>
+      _base(12, FontWeight.normal, color: AppColors.textMuted);
+  static TextStyle get version =>
+      _base(11, FontWeight.normal, color: AppColors.textMuted);
 
-  static const TextStyle bodyMedium = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-  );
-
-  static const TextStyle bodySmall = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textSecondary,
-  );
-
-  static const TextStyle button = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textOnPrimary,
-  );
-
-  static const TextStyle caption = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textMuted,
-  );
-
-  static const TextStyle version = TextStyle(
-    fontSize: 11,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textMuted,
-  );
-
-  static const TextStyle resultLarge = TextStyle(
-    fontSize: 36,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textOnPrimary,
-  );
-
-  static const TextStyle measurement = TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-  );
+  // ── Result / Measurement ─────────────────────────────────────
+  static TextStyle get resultLarge => _base(
+        40,
+        FontWeight.bold,
+        color: AppColors.textOnPrimary,
+        letterSpacing: 1,
+      );
+  static TextStyle get measurement =>
+      _base(28, FontWeight.bold, height: 1.1);
 }

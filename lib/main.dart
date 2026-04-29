@@ -41,6 +41,8 @@ class AlcoholDetectorApp extends StatelessWidget {
       child: MaterialApp.router(
         title: AppConstants.appName,
         theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: ThemeMode.light,
         routerConfig: AppRouter.router,
         debugShowCheckedModeBanner: false,
       ),
