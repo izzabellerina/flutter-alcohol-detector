@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,7 @@ import '../../services/card_reader_service.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/common/app_header.dart';
 import '../../widgets/common/app_scaffold.dart';
+import '../../widgets/common/shimmer_box.dart';
 import '../../widgets/common/status_badge.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -53,7 +55,7 @@ class HomeScreen extends StatelessWidget {
             state: alcohol,
             onConnect: controller.connectAlcoholDevice,
             onDisconnect: controller.disconnectAlcoholDevice,
-          ),
+          ).animate().fadeIn(duration: 320.ms).slideY(begin: 0.1, curve: Curves.easeOutCubic),
           const SizedBox(height: AppSpacing.md),
           _DeviceCard(
             title: 'เครื่องอ่านใบขับขี่',
@@ -63,7 +65,7 @@ class HomeScreen extends StatelessWidget {
             state: cardReader,
             onConnect: controller.connectCardReader,
             onDisconnect: controller.disconnectCardReader,
-          ),
+          ).animate(delay: 80.ms).fadeIn(duration: 320.ms).slideY(begin: 0.1, curve: Curves.easeOutCubic),
           const SizedBox(height: AppSpacing.md),
           _DriverCard(
             isCardReaderConnected: cardReader.isConnected,
@@ -71,7 +73,7 @@ class HomeScreen extends StatelessWidget {
             driver: driver,
             onReadCard: () => _readCard(context),
             onResetDriver: controller.rejectDriver,
-          ),
+          ).animate(delay: 160.ms).fadeIn(duration: 320.ms).slideY(begin: 0.1, curve: Curves.easeOutCubic),
           if (cardError != null) ...[
             const SizedBox(height: AppSpacing.md),
             _CardReadErrorBanner(
@@ -167,14 +169,17 @@ class _DeviceCard extends StatelessWidget {
               children: [
                 Text(title, style: AppTextStyles.headingSmall),
                 const SizedBox(height: 2),
-                Text(
-                  state.device?.id ?? description,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                if (state.isConnecting)
+                  const ShimmerBox(width: 140, height: 12)
+                else
+                  Text(
+                    state.device?.id ?? description,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
                 const SizedBox(height: AppSpacing.xs + 2),
                 StatusBadge(label: _statusLabel, variant: _variant),
               ],
