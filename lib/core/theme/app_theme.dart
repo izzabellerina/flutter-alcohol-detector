@@ -1,33 +1,64 @@
 import 'package:flutter/material.dart';
+
 import 'app_colors.dart';
+import 'app_radius.dart';
+import 'app_spacing.dart';
 import 'app_text_styles.dart';
 
 class AppTheme {
   AppTheme._();
 
-  static ThemeData get light {
+  // ── Light theme ──────────────────────────────────────────────
+  static ThemeData get light => _build(
+        brightness: Brightness.light,
+        scaffoldBackground: AppColors.background,
+        surface: AppColors.surface,
+        surfaceVariant: AppColors.surfaceVariant,
+        onSurface: AppColors.textPrimary,
+        border: AppColors.border,
+      );
+
+  // ── Dark theme ───────────────────────────────────────────────
+  static ThemeData get dark => _build(
+        brightness: Brightness.dark,
+        scaffoldBackground: AppColors.darkBackground,
+        surface: AppColors.darkSurface,
+        surfaceVariant: AppColors.darkSurfaceVariant,
+        onSurface: AppColors.darkTextPrimary,
+        border: AppColors.darkBorder,
+      );
+
+  static ThemeData _build({
+    required Brightness brightness,
+    required Color scaffoldBackground,
+    required Color surface,
+    required Color surfaceVariant,
+    required Color onSurface,
+    required Color border,
+  }) {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.light,
-      scaffoldBackgroundColor: AppColors.background,
-      colorScheme: const ColorScheme.light(
+      brightness: brightness,
+      scaffoldBackgroundColor: scaffoldBackground,
+      colorScheme: ColorScheme(
+        brightness: brightness,
         primary: AppColors.primary,
         onPrimary: AppColors.textOnPrimary,
         secondary: AppColors.secondary,
         onSecondary: AppColors.textOnPrimary,
         error: AppColors.error,
         onError: AppColors.textOnPrimary,
-        surface: AppColors.surface,
-        onSurface: AppColors.textPrimary,
+        surface: surface,
+        onSurface: onSurface,
+        surfaceContainerHighest: surfaceVariant,
+        outline: border,
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: AppColors.headerBar,
         foregroundColor: AppColors.textOnPrimary,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+        titleTextStyle: AppTextStyles.headingSmall.copyWith(
           color: AppColors.textOnPrimary,
         ),
       ),
@@ -37,41 +68,45 @@ class AppTheme {
           foregroundColor: AppColors.textOnPrimary,
           minimumSize: const Size(double.infinity, 48),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.all(AppRadius.md),
           ),
           textStyle: AppTextStyles.button,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceVariant,
+        fillColor: surfaceVariant,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md + 2,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: AppRadius.all(AppRadius.md),
+          borderSide: BorderSide(color: border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: AppRadius.all(AppRadius.md),
+          borderSide: BorderSide(color: border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderRadius: AppRadius.all(AppRadius.md),
+          borderSide: const BorderSide(
+            color: AppColors.primary,
+            width: 2,
+          ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.all(AppRadius.md),
           borderSide: const BorderSide(color: AppColors.error),
         ),
       ),
-      dividerTheme: const DividerThemeData(
-        color: AppColors.divider,
+      dividerTheme: DividerThemeData(
+        color: border,
         thickness: 1,
       ),
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         displayLarge: AppTextStyles.displayLarge,
+        displayMedium: AppTextStyles.displayMedium,
         headlineLarge: AppTextStyles.headingLarge,
         headlineMedium: AppTextStyles.headingMedium,
         headlineSmall: AppTextStyles.headingSmall,
@@ -79,6 +114,7 @@ class AppTheme {
         bodyMedium: AppTextStyles.bodyMedium,
         bodySmall: AppTextStyles.bodySmall,
         labelLarge: AppTextStyles.button,
+        labelMedium: AppTextStyles.label,
       ),
     );
   }
