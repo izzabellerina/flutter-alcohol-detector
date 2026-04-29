@@ -8,12 +8,37 @@
 ## [Unreleased]
 
 ### Planned
-- Phase UI-3: Home & Driver dashboard cards
 - Phase UI-4: Test flow polish (radial progress, wave animation, animated reveal)
 - Phase UI-5: Micro-interactions (flutter_animate, lottie, shimmer, haptics)
 - Phase UI-6: Accessibility & QA (a11y, contrast, font scaling, dark mode review)
 - Phase 6: เปลี่ยน Mock services เป็น implementation จริง
   (Bluetooth/USB, Camera+ML Kit, API)
+
+## [1.8.0] - 2026-04-29 (Phase UI-3: Home & Driver Dashboard Cards)
+
+### Added
+- Common Widgets ใหม่:
+  - `AppCard` — wrapper การ์ดมาตรฐาน (radius lg + border + optional shadow + onTap)
+  - `StatusBadge` — pill-shaped badge 5 variants (success/warning/danger/info/neutral)
+    + dot indicator + optional icon
+
+### Changed
+- **HomeScreen** ยกเครื่องเป็น dashboard cards ทั้งหมด:
+  - Card "เครื่องเป่าแอลกอฮอล์": icon ใหญ่ + status badge + ปุ่ม connect/disconnect
+  - Card "เครื่องอ่านใบขับขี่": เช่นเดียวกัน
+  - Card "ข้อมูลผู้ขับขี่":
+    - State 1: ถ้ายังไม่ยืนยัน — ไอคอน person + ปุ่มรูดบัตร (disabled ถ้าไม่เชื่อมเครื่อง)
+    - State 2: ถ้ายืนยันแล้ว — avatar (initials) + ชื่อ + ใบขับขี่ + badge "ยืนยันแล้ว"
+      + ปุ่มเปลี่ยนผู้ขับ
+  - ปุ่ม "เริ่มการทดสอบ" ใหญ่กว่าเดิม (64px) gradient + ไอคอน air + soft shadow
+    (gray ตอน disabled, gradient ตอน enabled)
+  - ลิงก์ "ออกจากระบบ" ลงเล็กไว้ล่างสุด พร้อมไอคอน
+- **DriverConfirmationScreen** ออกแบบใหม่:
+  - Badge "อ่านบัตรสำเร็จ" สีเขียวด้านบน
+  - **ป้ายทะเบียนแบบไทย** — กรอบขาว ขอบดำหนา 3px ตัวอักษรใหญ่ + ชื่อจังหวัดด้านล่าง
+  - การ์ดข้อมูลผู้ขับขี่: avatar (initials gradient) + ชื่อ + เลขใบขับขี่ พร้อมไอคอน
+  - ปุ่ม "ยืนยันข้อมูล" gradient เขียวเด่น + ปุ่ม "ข้อมูลไม่ถูกต้อง" outlined
+- บัมป์ pubspec version → `1.8.0+1` + อัปเดต `_versionUpdatedAt`
 
 ## [1.7.0] - 2026-04-29 (Phase UI-2: Auth Screens Polish)
 
