@@ -6,6 +6,9 @@ import '../screens/auth/otp_verification_screen.dart';
 import '../screens/auth/reset_password_screen.dart';
 import '../screens/home/driver_confirmation_screen.dart';
 import '../screens/home/home_screen.dart';
+import '../screens/test/test_in_progress_screen.dart';
+import '../screens/test/test_ready_screen.dart';
+import '../screens/test/test_result_screen.dart';
 import '../services/card_reader_service.dart';
 import 'app_routes.dart';
 
@@ -75,6 +78,21 @@ class AppRouter {
           }
           return DriverConfirmationScreen(driver: driver);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.testReady,
+        name: 'testReady',
+        builder: (context, state) => const TestReadyScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.testInProgress,
+        name: 'testInProgress',
+        builder: (context, state) => const TestInProgressScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.testComplete,
+        name: 'testComplete',
+        builder: (context, state) => const TestResultScreen(),
       ),
     ],
   );
