@@ -8,10 +8,30 @@
 ## [Unreleased]
 
 ### Planned
-- Phase 2: Authentication Flow (OTP via SMS/Email, Reset Password)
 - Phase 3: เชื่อมต่ออุปกรณ์ (เครื่องเป่าแอลกอฮอล์ + เครื่องอ่านใบขับขี่)
 - Phase 4: ยืนยันข้อมูลผู้ขับขี่
 - Phase 5: หน้าทดสอบ + Face Detection + บันทึกผล
+- เชื่อมต่อ API จริงใน Auth flow (ปัจจุบันยัง mock อยู่)
+
+## [1.2.0] - 2026-04-29 (Phase 2: Authentication Flow)
+
+### Added
+- Models: `ContactType` enum + `OtpRequest` + `ContactValidator` (ตรวจสอบและ mask เบอร์/อีเมล)
+- Custom widget `OtpInputField` — กล่อง OTP 6 หลัก รองรับ auto-focus, backspace, paste
+- หน้า `OtpVerificationScreen`:
+  - แสดงปลายทางที่ส่ง OTP (mask) + รหัสอ้างอิง 5 ตัวอักษร
+  - ตัวจับเวลานับถอยหลัง 5 นาที
+  - ปุ่ม "ขอรหัสใหม่อีกครั้ง" (reset countdown)
+  - หมายเหตุพิเศษสำหรับ email ("หากไม่ได้รับ ให้ดูในอีเมล์ขยะ")
+  - รองรับทั้ง phone และ email ในไฟล์เดียว
+- หน้า `ResetPasswordScreen`:
+  - ฟิลด์ New Password + Re Password พร้อม show/hide
+  - Validator ตรวจความยาว ≥ 8 และยืนยันรหัสตรงกัน
+- Routing เพิ่ม: `/otp/phone`, `/otp/email`, `/reset-password` (รับ `OtpRequest` ผ่าน `extra`)
+
+### Changed
+- `ForgotPasswordScreen`: เพิ่ม validation ตรวจรูปแบบเบอร์/อีเมล อัตโนมัติ และ navigate ไปหน้า OTP ที่เหมาะสม พร้อม `OtpRequest`
+- `LoginScreen`: เพิ่ม Form validation, loading state, และ disable ปุ่มขณะส่ง
 
 ## [1.1.0] - 2026-04-28 (Phase 1: Foundation)
 
