@@ -17,10 +17,18 @@ class DeviceController extends ChangeNotifier {
   DeviceState _alcoholState = const DeviceState();
   DeviceState _cardReaderState = const DeviceState();
 
+  DriverInfo? _confirmedDriver;
+  CardReadException? _cardReadError;
+  bool _isReadingCard = false;
+
   DeviceState get alcoholState => _alcoholState;
   DeviceState get cardReaderState => _cardReaderState;
+  DriverInfo? get confirmedDriver => _confirmedDriver;
+  CardReadException? get cardReadError => _cardReadError;
+  bool get isReadingCard => _isReadingCard;
 
-  bool get isReadyForTest => _alcoholState.isConnected;
+  bool get isReadyForTest =>
+      _alcoholState.isConnected && _confirmedDriver != null;
 
   Future<void> connectAlcoholDevice() async {
     _alcoholState = _alcoholState.copyWith(
@@ -83,10 +91,52 @@ class DeviceController extends ChangeNotifier {
   Future<void> disconnectCardReader() async {
     await _cardReaderService.disconnect();
     _cardReaderState = const DeviceState();
+    _confirmedDriver = null;
+    _cardReadError = null;
     notifyListeners();
   }
 
-  Future<DriverInfo> readDriverCard() async {
-    return _cardReaderService.readCard();
+  /// อ่านบัตรใบขับขี่ — คืน DriverInfo เมื่อสำเร็จ, คืน null เมื่อเกิดข้อผิดพลาด
+  /// (error จะถูกเก็บใน cardReadError)
+  Future<DriverInfo?> readDriverCard() async {
+    _isReadingCard = true;
+    _cardReadError = null;
+    notifyListeners();
+
+    try {
+      final info = await _cardReaderService.readCard();
+      _isReadingCard = false;
+      notifyListeners();
+      return info;
+    } on CardReadException catch (e) {
+      _isReadingCard = false;
+      _cardReadError = e;
+      notifyListeners();
+      return null;
+    } catch (e) {
+      _isReadingCard = false;
+      _cardReadError = CardReadException(
+        type: CardReadErrorType.notFound,
+        message: e.toString(),
+      );
+      notifyListeners();
+      return null;
+    }
+  }
+
+  void confirmDriver(DriverInfo info) {
+    _confirmedDriver = info;
+    _cardReadError = null;
+    notifyListeners();
+  }
+
+  void rejectDriver() {
+    _confirmedDriver = null;
+    notifyListeners();
+  }
+
+  void clearCardReadError() {
+    _cardReadError = null;
+    notifyListeners();
   }
 }
