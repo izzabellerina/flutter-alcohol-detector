@@ -8,10 +8,32 @@
 ## [Unreleased]
 
 ### Planned
-- Phase 3: เชื่อมต่ออุปกรณ์ (เครื่องเป่าแอลกอฮอล์ + เครื่องอ่านใบขับขี่)
-- Phase 4: ยืนยันข้อมูลผู้ขับขี่
+- Phase 4: ยืนยันข้อมูลผู้ขับขี่ (อ่านใบขับขี่ + หน้ายืนยันข้อมูล + Error states)
 - Phase 5: หน้าทดสอบ + Face Detection + บันทึกผล
+- เปลี่ยน Mock services เป็น implementation จริง (Bluetooth/USB Serial)
 - เชื่อมต่อ API จริงใน Auth flow (ปัจจุบันยัง mock อยู่)
+
+## [1.3.0] - 2026-04-29 (Phase 3: Device Integration)
+
+### Added
+- เพิ่ม dependency `provider ^6.1.2` สำหรับ state management
+- Models: `DeviceConnectionState`, `DeviceKind`, `DeviceInfo`, `DeviceState` (immutable พร้อม `copyWith`)
+- Services (abstract + mock implementations):
+  - `AlcoholDeviceService` — scan / connect / disconnect / readMeasurements
+  - `CardReaderService` — scan / connect / disconnect / readCard (พร้อม `DriverInfo`, `CardReadException`)
+- `DeviceController` (ChangeNotifier) — รวมการจัดการสถานะของอุปกรณ์ทั้งสองตัว, มี `isReadyForTest` flag
+- ปรับ `main.dart` ใช้ `MultiProvider` ห่อแอปเพื่อ inject `DeviceController` ลงทั้ง widget tree
+
+### Changed
+- `HomeScreen` ฟังสถานะจาก `DeviceController`:
+  - ปุ่มเครื่องเป่า: เปลี่ยนสีจากเทา → แดงเมื่อเชื่อมต่อ + แสดง loading ระหว่างเชื่อมต่อ
+  - ปุ่มเครื่องอ่านใบขับขี่: เช่นเดียวกัน
+  - ปุ่ม "เริ่มการทดสอบ" ปลดล็อกเฉพาะเมื่อเครื่องเป่าเชื่อมต่อแล้ว (`isReadyForTest`)
+  - แสดง `Device ID` ใน header เมื่อเชื่อมต่อสำเร็จ
+  - มี Error banner เมื่อเชื่อมต่อไม่สำเร็จ
+
+### Notes
+- Implementation ยังเป็น Mock (ใช้ `Future.delayed`) — Bluetooth/USB Serial จริงจะมาทดแทนตอนทดสอบกับฮาร์ดแวร์ โดย interface พร้อมรองรับแล้ว
 
 ## [1.2.0] - 2026-04-29 (Phase 2: Authentication Flow)
 
