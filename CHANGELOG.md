@@ -14,6 +14,24 @@
   - Camera + google_mlkit_face_detection สำหรับตรวจจับใบหน้า
   - API จริงสำหรับ Auth flow + บันทึกผลทดสอบ
 
+## [1.5.1] - 2026-04-29
+
+### Added
+- เพิ่ม dependency `package_info_plus ^8.1.2`
+- เพิ่ม `AppInfo` service โหลด `version` + `buildNumber` จาก `pubspec.yaml`
+  ผ่าน `PackageInfo.fromPlatform()` และ inject ผ่าน `Provider`
+- เพิ่ม `versionUpdatedAt` (DateTime) ใน `AppInfo` — เก็บเป็น constant
+  ใน `app_info.dart` ที่ต้องอัปเดตด้วยมือทุกครั้งที่บัมป์เวอร์ชัน
+- `AppFooter` แสดงบรรทัด "อัปเดตเมื่อ ..." ใต้ Version (ฟอร์แมตไทย พ.ศ.)
+
+### Changed
+- `AppFooter` อ่านเวอร์ชัน + วันที่อัปเดตจาก `AppInfo` ใน Provider แทน hardcode
+  (รองรับ `versionOverride` + `updatedAtOverride` สำหรับใช้ในเทส)
+- `main()` เปลี่ยนเป็น `async` เพื่อโหลด `AppInfo` ก่อน `runApp()`
+- ลบ `AppConstants.appVersion` (hardcode) ออก
+- อัปเดต widget test ให้ส่ง `AppInfo` ตอนสร้างแอป + verify ทั้ง Version
+  และข้อความ "อัปเดตเมื่อ ..."
+
 ## [1.5.0] - 2026-04-29 (Phase 5: Test Flow + Result)
 
 ### Added
