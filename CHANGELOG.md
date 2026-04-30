@@ -8,12 +8,41 @@
 ## [Unreleased]
 
 ### Planned
-- Phase UI-6B: Common widgets ตาม design ใหม่ (chevron buttons, SuccessHeader, UserCard, ConnectedDeviceCard)
 - Phase UI-6C: Apply to screens (Home + screens อื่น ๆ ตาม design)
 - Phase UI-7: Accessibility & QA (a11y, contrast, font scaling, dark mode review)
 - Phase 6: เปลี่ยน Mock services เป็น implementation จริง
   (Bluetooth/USB, Camera+ML Kit, API)
 - Lottie animations (confetti for pass result, success checkmark)
+
+## [1.12.0] - 2026-04-30 (Phase UI-6B: Common Widgets ตาม Design ใหม่)
+
+### Added
+- **`SuccessHeader`** widget — gradient header สำหรับหน้าสถานะ:
+  - วงกลมไอคอนใหญ่ (default check icon เขียว) + shadow
+  - Title + subtitle (สีขาว)
+  - Slot สำหรับ `trailing` widget (เช่น bluetooth indicator)
+  - Bottom rounded corners 24px
+- **`BluetoothStatusIndicator`** widget — วงกลมน้ำเงินอ่อน + bluetooth icon + green check badge มุมล่างขวา
+  (สำหรับใช้เป็น trailing ของ SuccessHeader)
+- **`UserCard`** widget — การ์ดข้อมูลผู้ใช้:
+  - Avatar circle (น้ำเงินอ่อน + person icon)
+  - Greeting "สวัสดี ..." ขนาดใหญ่
+  - Divider
+  - Info rows: ไอคอนน้ำเงินใน rounded-square (calendar / badge / bluetooth) + ข้อความ
+- **`ConnectedDeviceCard`** widget — แสดงอุปกรณ์ที่เชื่อมต่ออยู่:
+  - วงกลมน้ำเงิน (bluetooth icon ขาว) + label + Device ID (เขียว) + StatusBadge ขวา
+
+### Changed
+- **`AppButton`** เพิ่มฟีเจอร์ตาม design:
+  - เพิ่ม `showChevron: bool` — เปิด chevron-right pattern (icon ซ้าย + label กลาง + chevron ขวา)
+  - เพิ่ม variants ใหม่: `outlinePrimary` (ขอบน้ำเงิน), `outlineDanger` (ขอบแดง)
+  - ปุ่มสูงขึ้นเป็น 52px (จาก 48px) ให้ใหญ่ขึ้นตาม design
+  - Padding horizontal เพิ่มเป็น `AppSpacing.lg`
+- **`StatusBadge`** ปรับ styling ตาม design:
+  - ลบ border ออก (ใช้ bg color แทน — สะอาดกว่า)
+  - Padding เพิ่ม horizontal เป็น `md`, vertical `xs+1`
+  - Success variant ใช้ bg `success100` (สดขึ้นเล็กน้อย)
+- บัมป์ pubspec version → `1.12.0+1` + อัปเดต `_versionUpdatedAt`
 
 ## [1.11.0] - 2026-04-30 (Phase UI-6A: Palette Swap จาก Design Update)
 
