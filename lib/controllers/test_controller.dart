@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import '../core/constants/app_constants.dart';
+import '../core/utils/haptics.dart';
 import '../models/test_models.dart';
 import '../services/card_reader_service.dart';
 import '../services/test_repository.dart';
@@ -73,6 +74,7 @@ class TestController extends ChangeNotifier {
 
     // เฟส 2: ผู้เป่า — progress 0% → 100% ภายใน ~5 วินาที
     _phase = TestPhase.blowing;
+    Haptics.light();
     notifyListeners();
     const totalDurationMs = 5000;
     const tickMs = 100;
@@ -109,6 +111,12 @@ class TestController extends ChangeNotifier {
     );
     _phase = TestPhase.complete;
     notifyListeners();
+
+    if (outcome == TestOutcome.passed) {
+      Haptics.success();
+    } else {
+      Haptics.failure();
+    }
 
     await _saveSession(driver);
   }

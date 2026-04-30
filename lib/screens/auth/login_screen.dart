@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/utils/haptics.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/common/app_footer.dart';
 import '../../widgets/common/app_logo.dart';
@@ -47,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
+    Haptics.light();
 
     setState(() => _isSubmitting = true);
     // TODO: เรียก API ยืนยันตัวตนใน Phase 2 (API integration)
@@ -54,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!mounted) return;
     setState(() => _isSubmitting = false);
+    Haptics.success();
     context.go(AppRoutes.home);
   }
 
@@ -72,13 +76,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(height: AppSpacing.xxl),
-                    const AppLogo(showSubtitle: false),
+                    const AppLogo(showSubtitle: false)
+                        .animate()
+                        .fadeIn(duration: 400.ms)
+                        .scale(begin: const Offset(0.85, 0.85), curve: Curves.easeOutBack),
                     const SizedBox(height: AppSpacing.lg),
                     Text(
                       'ระบบบันทึกการวัดระดับแอลกอฮอล์',
                       textAlign: TextAlign.center,
                       style: AppTextStyles.headingMedium,
-                    ),
+                    ).animate(delay: 120.ms).fadeIn(duration: 320.ms).slideY(begin: 0.2),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       'เข้าสู่ระบบเพื่อเริ่มต้นการทดสอบ',
@@ -86,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                       ),
-                    ),
+                    ).animate(delay: 180.ms).fadeIn(duration: 320.ms).slideY(begin: 0.2),
                     const SizedBox(height: AppSpacing.xxl),
                     TextFormField(
                       controller: _usernameController,

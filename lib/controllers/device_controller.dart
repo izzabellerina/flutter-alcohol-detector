@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../core/utils/haptics.dart';
 import '../models/device_models.dart';
 import '../services/alcohol_device_service.dart';
 import '../services/card_reader_service.dart';
@@ -47,11 +48,13 @@ class DeviceController extends ChangeNotifier {
         connectionState: DeviceConnectionState.connected,
         device: connected,
       );
+      Haptics.medium();
     } catch (e) {
       _alcoholState = _alcoholState.copyWith(
         connectionState: DeviceConnectionState.error,
         errorMessage: e.toString(),
       );
+      Haptics.heavy();
     }
     notifyListeners();
   }
@@ -59,6 +62,7 @@ class DeviceController extends ChangeNotifier {
   Future<void> disconnectAlcoholDevice() async {
     await _alcoholService.disconnect();
     _alcoholState = const DeviceState();
+    Haptics.light();
     notifyListeners();
   }
 
@@ -79,11 +83,13 @@ class DeviceController extends ChangeNotifier {
         connectionState: DeviceConnectionState.connected,
         device: connected,
       );
+      Haptics.medium();
     } catch (e) {
       _cardReaderState = _cardReaderState.copyWith(
         connectionState: DeviceConnectionState.error,
         errorMessage: e.toString(),
       );
+      Haptics.heavy();
     }
     notifyListeners();
   }
@@ -93,6 +99,7 @@ class DeviceController extends ChangeNotifier {
     _cardReaderState = const DeviceState();
     _confirmedDriver = null;
     _cardReadError = null;
+    Haptics.light();
     notifyListeners();
   }
 
@@ -106,11 +113,13 @@ class DeviceController extends ChangeNotifier {
     try {
       final info = await _cardReaderService.readCard();
       _isReadingCard = false;
+      Haptics.medium();
       notifyListeners();
       return info;
     } on CardReadException catch (e) {
       _isReadingCard = false;
       _cardReadError = e;
+      Haptics.heavy();
       notifyListeners();
       return null;
     } catch (e) {
@@ -119,6 +128,7 @@ class DeviceController extends ChangeNotifier {
         type: CardReadErrorType.notFound,
         message: e.toString(),
       );
+      Haptics.heavy();
       notifyListeners();
       return null;
     }
@@ -127,11 +137,13 @@ class DeviceController extends ChangeNotifier {
   void confirmDriver(DriverInfo info) {
     _confirmedDriver = info;
     _cardReadError = null;
+    Haptics.success();
     notifyListeners();
   }
 
   void rejectDriver() {
     _confirmedDriver = null;
+    Haptics.light();
     notifyListeners();
   }
 

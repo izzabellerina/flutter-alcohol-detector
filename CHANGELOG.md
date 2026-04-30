@@ -8,10 +8,38 @@
 ## [Unreleased]
 
 ### Planned
-- Phase UI-5: Micro-interactions (flutter_animate, lottie, shimmer, haptics)
 - Phase UI-6: Accessibility & QA (a11y, contrast, font scaling, dark mode review)
 - Phase 6: เปลี่ยน Mock services เป็น implementation จริง
   (Bluetooth/USB, Camera+ML Kit, API)
+- Lottie animations (confetti for pass result, success checkmark)
+
+## [1.10.0] - 2026-04-30 (Phase UI-5: Micro-interactions)
+
+### Added
+- เพิ่ม dependencies: `flutter_animate ^4.5.2`, `shimmer ^3.0.0`
+- `Haptics` helper รวม patterns: `light`, `medium`, `heavy`, `selection`,
+  `success` (medium → light), `failure` (heavy × 2)
+- Custom page transitions ใน `go_router`:
+  - `_slidePage` — slide จากขวา + fade (สำหรับ next/forward navigation)
+  - `_fadeScalePage` — fade + scale 0.97→1.0 (สำหรับ login/home/test screens)
+- `ShimmerBox` widget — skeleton loading กรอบ shimmer
+
+### Changed
+- **DeviceController** เพิ่ม haptic feedback:
+  - Connect สำเร็จ → medium / Connect ล้มเหลว → heavy
+  - Disconnect → light
+  - Read card สำเร็จ → medium / ล้มเหลว → heavy
+  - Confirm driver → success pattern / Reject → light
+- **TestController** เพิ่ม haptic:
+  - เริ่มเป่า → light
+  - Pass → success pattern / Fail → failure pattern
+- **LoginScreen**:
+  - กด login → light haptic + success haptic เมื่อสำเร็จ
+  - Logo + headings มี entrance animation (fade + scale + slide)
+- **HomeScreen**:
+  - Device cards staggered entrance animation (fade + slideY, delay 80ms ต่อกัน)
+  - Device card ใช้ `ShimmerBox` แทน text ตอน `state.isConnecting`
+- บัมป์ pubspec version → `1.10.0+1` + อัปเดต `_versionUpdatedAt`
 
 ## [1.9.0] - 2026-04-30 (Phase UI-4: Test Flow Polish)
 
