@@ -143,10 +143,11 @@ class TestController extends ChangeNotifier {
   double _generateUserReading() {
     switch (nextScenario) {
       case MockTestScenario.pass:
-      case MockTestScenario.failFaceMismatch:
         return 0.0;
       case MockTestScenario.failAlcohol:
-        return 15.0 + _random.nextInt(20).toDouble();
+      case MockTestScenario.failFaceMismatch:
+        // เครื่องเป่าวัดได้แม้ใบหน้าจะไม่ตรง
+        return 15.0 + _random.nextInt(75).toDouble();
     }
   }
 
