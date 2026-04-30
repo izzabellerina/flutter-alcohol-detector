@@ -38,7 +38,7 @@ class DriverConfirmationScreen extends StatelessWidget {
                     vertical: AppSpacing.xs + 2,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary50,
+                    color: AppColors.success50,
                     borderRadius: AppRadius.all(AppRadius.pill),
                   ),
                   child: Row(
@@ -47,13 +47,13 @@ class DriverConfirmationScreen extends StatelessWidget {
                       const Icon(
                         Icons.check_circle,
                         size: 16,
-                        color: AppColors.primary600,
+                        color: AppColors.success600,
                       ),
                       const SizedBox(width: AppSpacing.xs),
                       Text(
                         'อ่านบัตรสำเร็จ',
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.primary700,
+                          color: AppColors.success700,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

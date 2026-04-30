@@ -81,7 +81,7 @@ class _ResultBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final passed = outcome == TestOutcome.passed;
-    final color = passed ? AppColors.primary500 : AppColors.danger500;
+    final color = passed ? AppColors.success500 : AppColors.danger500;
     final label = passed ? 'ผ่าน' : 'ไม่ผ่าน';
     final icon = passed ? Icons.check_circle : Icons.cancel;
     final caption = passed
@@ -103,7 +103,7 @@ class _ResultBadge extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: passed
-                ? [AppColors.primary500, AppColors.primary700]
+                ? [AppColors.success500, AppColors.success700]
                 : [AppColors.danger500, AppColors.danger700],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -197,7 +197,7 @@ class _MeasurementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final exceed = measurement.value >= threshold;
-    final color = exceed ? AppColors.danger600 : AppColors.primary700;
+    final color = exceed ? AppColors.danger600 : AppColors.success700;
     // bar value: relative to 2x threshold (full bar = 2 * threshold)
     final barValue = (measurement.value / (threshold * 2)).clamp(0.0, 1.0);
     // threshold line position (0.5 if 2x scale)
@@ -405,14 +405,14 @@ class _SaveStatusBanner extends StatelessWidget {
           ] else ...[
             const Icon(
               Icons.cloud_done_outlined,
-              color: AppColors.primary600,
+              color: AppColors.success600,
               size: 16,
             ),
             const SizedBox(width: AppSpacing.xs + 2),
             Text(
               'บันทึกผลทดสอบเรียบร้อย',
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.primary700,
+                color: AppColors.success700,
                 fontWeight: FontWeight.w500,
               ),
             ),

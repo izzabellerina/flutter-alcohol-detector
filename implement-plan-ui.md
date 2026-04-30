@@ -4,6 +4,24 @@
 
 ---
 
+## 0. Design Update (2026-04-30) — จากทีม Design
+
+ทีม Design ส่งหน้าตัวอย่าง "เชื่อมต่ออุปกรณ์สำเร็จ" มาเป็น reference สำหรับ theme ที่ต้องการใช้ในแอป สรุป key changes จาก theme ปัจจุบัน:
+
+| ปัจจุบัน (UI-1 → UI-5) | Design ใหม่ |
+|---|---|
+| **Primary = เขียว** (`primary500 #22C55E`) | **Primary = น้ำเงิน** (อิงจาก `info700` family) |
+| เขียวเป็นสีหลักของปุ่ม + brand | **เขียว = success only** (badge "เชื่อมต่อแล้ว", check icon, ID text) |
+| Header: gradient น้ำเงิน + avatar + chips | Header: gradient น้ำเงิน + **success illustration** (วงกลมขาว + check ใหญ่) + bluetooth indicator มุมขวา |
+| ปุ่มหลัก: gradient เขียว + icon | ปุ่มหลัก: solid น้ำเงิน + icon ซ้าย + label กลาง + **chevron-right** ขวา |
+| ปุ่มรอง: gray secondary | ปุ่มรอง: outlined น้ำเงิน + chevron-right |
+| ปุ่มอันตราย: solid danger | ปุ่มอันตราย: **outlined แดง** + chevron-right |
+| User card: header แสดง chips | **User card** แยก: avatar + greeting + divider + info rows (ไอคอนน้ำเงินซ้าย) |
+
+ผลกระทบ: theme palette swap → เกือบทุก screen ที่ touch ในอดีตต้องตรวจ/ปรับให้สอดคล้อง — เพิ่ม Phase UI-6 (3 sub-phases) ก่อน Accessibility & QA (เลื่อนเป็น UI-7)
+
+---
+
 ## 1. เป้าหมาย (Goals)
 
 | เป้าหมาย | ตัวชี้วัด |
@@ -20,7 +38,11 @@
 
 ### 2.1 Visual Tone
 - **Modern Material 3 expressive** — โทนเรียบสะอาดแบบ Material You แต่มี personality
-- **เน้นความปลอดภัย** — โทนเขียวสื่อ "ผ่าน/ปลอดภัย", แดงสื่อ "เกิน/อันตราย", น้ำเงินสื่อ "ระบบราชการ"
+- **Color semantics** (อิงตาม design ใหม่):
+  - **น้ำเงิน = Brand / Primary** — ใช้กับ header, ปุ่มหลัก, ไอคอน, brand element
+  - **เขียว = Success only** — ใช้กับ status badge "เชื่อมต่อแล้ว", check icon, "ผ่าน" result, ID text
+  - **แดง = Danger / Destructive** — disconnect, "ไม่ผ่าน", error states
+  - **เหลือง = Warning** — threshold marker, น้ำหนักเตือนภัย
 - **Photographic confidence** — ใช้ภาพจริง / ไอคอน outline แทน emoji
 
 ### 2.2 Spacing Scale
@@ -55,15 +77,23 @@
 ### 3.3 Color System (ขยาย)
 ปัจจุบันมี primary/danger/secondary แค่ 1 ระดับต่อสี — ขยายเป็นระดับ tint/shade
 
+> **Note (Design Update 2026-04-30)**: หลังได้ design ใหม่ — primary จะเปลี่ยนเป็น **blue** (info family), เขียวจะถูกใช้เป็น **success** เท่านั้น โครงสร้าง scale ยังคงเหมือนเดิม แค่ swap ความหมายของ aliases
+
 ```dart
 class AppColors {
-  // Primary (green)
-  static const primary50 = Color(0xFFEFFDF4);
-  static const primary100 = Color(0xFFD1FADF);
-  static const primary500 = Color(0xFF22C55E);  // brand
-  static const primary700 = Color(0xFF15803D);
-  static const primary900 = Color(0xFF14532D);
-  // ... เช่นเดียวกันสำหรับ danger, info, neutral
+  // Primary (blue) — ใช้กับ brand, header, button หลัก
+  static const primary50 = Color(0xFFEFF6FF);
+  static const primary100 = Color(0xFFDBEAFE);
+  static const primary500 = Color(0xFF3B82F6);  // brand
+  static const primary700 = Color(0xFF1D4ED8);
+  static const primary900 = Color(0xFF1E3A8A);
+
+  // Success (green) — ใช้กับ badge, check icon, ผลลัพธ์ "ผ่าน"
+  static const success50 = Color(0xFFEFFDF4);
+  static const success500 = Color(0xFF22C55E);
+  static const success700 = Color(0xFF15803D);
+
+  // ... เช่นเดียวกันสำหรับ danger (red), warning (amber), neutral (gray)
 }
 ```
 
@@ -251,7 +281,28 @@ class AppRadius {
 - Haptic feedback ในจุดสำคัญ
 - Shimmer loading states
 
-### Phase UI-6: Accessibility & QA
+### Phase UI-6: Theme Realignment (จาก Design Update)
+แตกเป็น 3 sub-phases เพื่อให้ commit/PR ทยอยตรวจได้:
+
+#### UI-6A: Palette Swap
+- สลับความหมาย: **primary = blue, success = green** ใน `AppColors`
+- ปรับ `AppTheme.light/dark` ให้ใช้ palette ใหม่
+- ผลทันที: ปุ่มหลักทั่วแอปเปลี่ยนเป็นน้ำเงิน, badge "เชื่อมต่อแล้ว" ยังคงเขียว
+- ไม่ต้องแก้ logic หน้าต่าง ๆ (แค่ผลลัพธ์ visual เปลี่ยน)
+
+#### UI-6B: Common Widgets ตาม Design ใหม่
+- ปรับ `AppButton` เพิ่ม chevron-right pattern (icon ซ้าย + label กลาง + chevron ขวา)
+- เพิ่ม `SuccessHeader` widget (วงกลมขาว + check + title + subtitle + status indicator มุมขวา)
+- ปรับ `UserCard` widget — avatar circle + greeting + divider + info rows (ไอคอนน้ำเงินซ้าย)
+- ปรับ `StatusBadge` ให้ตรงกับ design (light bg + dot + text)
+- เพิ่ม `ConnectedDeviceCard` — bluetooth icon + label + ID + green pill ขวา
+
+#### UI-6C: Apply to Screens
+- HomeScreen ใช้ widgets ใหม่ตาม layout ในรูป design
+- DriverConfirmation, TestReady, TestResult, Auth screens — ตรวจให้สอดคล้องกับ palette + button style ใหม่
+- ลบ gradient เขียวเก่าออก เปลี่ยนเป็น gradient น้ำเงินหรือ solid
+
+### Phase UI-7: Accessibility & QA
 - Semantic labels
 - ตรวจ contrast ratio (WCAG AA)
 - รองรับ font scaling
@@ -297,25 +348,29 @@ assets/
 ## 10. Open Questions
 
 1. **Brand identity**: มี logo / brand guideline จากลูกค้าหรือไม่? ถ้ายังต้องสร้างเอง
-2. **Color tone**: คงเขียวสื่อ "ผ่าน" หรืออาจจะใช้สีน้ำเงินตามหน่วยงานราชการ?
+2. ~~**Color tone**: คงเขียวสื่อ "ผ่าน" หรืออาจจะใช้สีน้ำเงินตามหน่วยงานราชการ?~~ ✅ (2026-04-30) — Design กำหนด **น้ำเงิน = primary, เขียว = success**
 3. **Font licensing**: Sarabun เป็น OFL — ใช้ได้ฟรีในเชิงพาณิชย์ ✅
 4. **Lottie animations**: มีงบสำหรับซื้อ animation หรือใช้จาก lottiefiles.com (ฟรี)?
 5. **Dark mode priority**: จำเป็นในระยะแรกไหม หรือเลื่อน Phase หลัง?
 6. **Camera asset**: ใช้ illustration / icon mock หรือรอเชื่อมกล้องจริงค่อยทำ UI สวย?
 7. **Language**: คงไทยอย่างเดียว หรือต้องรองรับอังกฤษด้วย?
+8. **Design ระดับลึกของหน้าอื่น ๆ**: ที่เห็นจาก Design ใหม่มีแค่ 1 หน้า (success state) — หน้าอื่น (login, OTP, test, result) อิงจาก design system ที่ extrapolate มาเอง — Design team จะส่งเพิ่มไหม?
 
 ---
 
 ## 11. Estimated Effort (คร่าว ๆ)
 
-| Phase | งาน | เวลา (วัน) |
-|---|---|---|
-| UI-1 | Foundation | 2 |
-| UI-2 | Auth polish | 2 |
-| UI-3 | Home & Driver | 2 |
-| UI-4 | Test flow polish | 3 |
-| UI-5 | Micro-interactions | 2 |
-| UI-6 | Accessibility & QA | 2 |
-| **รวม** | | **~13 วัน** |
+| Phase | งาน | เวลา (วัน) | Status |
+|---|---|---|---|
+| UI-1 | Foundation | 2 | ✅ Done |
+| UI-2 | Auth polish | 2 | ✅ Done |
+| UI-3 | Home & Driver | 2 | ✅ Done |
+| UI-4 | Test flow polish | 3 | ✅ Done |
+| UI-5 | Micro-interactions | 2 | ✅ Done |
+| UI-6A | Theme palette swap | 0.5 | 🔵 Next |
+| UI-6B | Common widgets ตาม design ใหม่ | 1.5 | ⏳ |
+| UI-6C | Apply to screens | 1.5 | ⏳ |
+| UI-7 | Accessibility & QA | 2 | ⏳ |
+| **รวม** | | **~16.5 วัน** | |
 
 > หมายเหตุ: ประเมินสำหรับนักพัฒนา 1 คนทำเต็มเวลา; งานออกแบบ asset (logo, illustrations) แยกต่างหาก

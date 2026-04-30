@@ -3,14 +3,26 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // ── Primary (Green) ──────────────────────────────────────────
-  static const Color primary50 = Color(0xFFEFFDF4);
-  static const Color primary100 = Color(0xFFD1FADF);
-  static const Color primary200 = Color(0xFFA7F3C5);
-  static const Color primary500 = Color(0xFF22C55E);
-  static const Color primary600 = Color(0xFF16A34A);
-  static const Color primary700 = Color(0xFF15803D);
-  static const Color primary900 = Color(0xFF14532D);
+  // ── Primary (Blue) — Brand color ตาม Design Update 2026-04-30 ──
+  // ใช้กับ header, ปุ่มหลัก, ไอคอน, brand element
+  static const Color primary50 = Color(0xFFEFF6FF);
+  static const Color primary100 = Color(0xFFDBEAFE);
+  static const Color primary200 = Color(0xFFBFDBFE);
+  static const Color primary500 = Color(0xFF2563EB);
+  static const Color primary600 = Color(0xFF1D4ED8);
+  static const Color primary700 = Color(0xFF1E40AF);
+  static const Color primary800 = Color(0xFF1E3A8A);
+  static const Color primary900 = Color(0xFF172554);
+
+  // ── Success (Green) — สำหรับสถานะ "สำเร็จ/ผ่าน" เท่านั้น ──
+  // badge "เชื่อมต่อแล้ว" / "ยืนยันแล้ว", check icon, "ผ่าน" result, ID text
+  static const Color success50 = Color(0xFFEFFDF4);
+  static const Color success100 = Color(0xFFD1FADF);
+  static const Color success200 = Color(0xFFA7F3C5);
+  static const Color success500 = Color(0xFF22C55E);
+  static const Color success600 = Color(0xFF16A34A);
+  static const Color success700 = Color(0xFF15803D);
+  static const Color success900 = Color(0xFF14532D);
 
   // ── Danger (Red) ─────────────────────────────────────────────
   static const Color danger50 = Color(0xFFFEF2F2);
@@ -19,7 +31,7 @@ class AppColors {
   static const Color danger600 = Color(0xFFDC2626);
   static const Color danger700 = Color(0xFFB91C1C);
 
-  // ── Info (Blue) — Header bar ─────────────────────────────────
+  // ── Info (Blue) — ใช้ shade เดียวกับ primary, เก็บไว้ backward-compat
   static const Color info50 = Color(0xFFEFF6FF);
   static const Color info100 = Color(0xFFDBEAFE);
   static const Color info500 = Color(0xFF3B82F6);
@@ -57,8 +69,8 @@ class AppColors {
   static const Color secondary = neutral500;
   static const Color secondaryDark = neutral600;
 
-  static const Color headerBar = info800;
-  static const Color headerBarDark = info900;
+  static const Color headerBar = primary700;
+  static const Color headerBarDark = primary900;
 
   static const Color background = neutral0;
   static const Color surface = neutral50;
@@ -72,11 +84,13 @@ class AppColors {
   static const Color border = neutral200;
   static const Color divider = neutral200;
 
-  static const Color success = primary500;
+  /// alias success = ใช้กับ success state (เขียว)
+  static const Color success = success500;
   static const Color warning = warning500;
   static const Color error = danger500;
 
-  static const Color resultPass = primary500;
+  /// alias สำหรับ result screen — ผ่านยังคงเขียว, ไม่ผ่านคงแดง
+  static const Color resultPass = success500;
   static const Color resultFail = danger500;
 
   // ── Dark mode tokens ─────────────────────────────────────────
