@@ -13,6 +13,31 @@
   (Bluetooth/USB, Camera+ML Kit, API)
 - Lottie animations (confetti for pass result, success checkmark)
 
+## [1.15.0] - 2026-04-30 (Phase UI-6E: TestInProgress Redesign จาก Design Update)
+
+ทีม Design ส่ง mockup TestInProgress screen 3 states (เริ่มเป่า / 25% / 100%)
+มาเพิ่ม — redesign หน้าทดสอบทั้งหน้า:
+
+### Changed
+- **`FaceFramePreview`** ปรับเป็นสไตล์ photo frame:
+  - กรอบบางสี `primary200` (น้ำเงินอ่อน) ตอน in-frame — แทน face oval เขียวเด่น
+  - Out-of-frame: กรอบ `danger500` หนา 3px + glow + shake animation
+  - ลบ inner face oval + breathing pulse + radial gradient bg ออก
+  - Person silhouette ใหญ่ขึ้น (placeholder รอกล้องจริง)
+- **`TestInProgressScreen`** ยกเครื่องใหม่:
+  - **Header** น้ำเงิน gradient + "เริ่มการทดสอบ" + power icon (ออกไปหน้าหลัก)
+  - **Title** ใหญ่ขึ้น (`headingLarge` bold) — "เริ่มการเป่า..." / "กำลังเป่า..."
+    + AnimatedSwitcher fade transition
+  - **ProgressRing** ขนาดใหญ่ (200×200) สี success500 + percent กลาง 56px
+    (ลบ wave rings ที่เคยมีออก — clean ขึ้น)
+  - **InstructionPill** สีน้ำเงินอ่อน — "(i) ให้นั่งอยู่ในกรอบ ตลอดเวลาทดสอบ"
+  - คง 3-2-1 countdown overlay ก่อนเริ่ม
+- **`_DebugFaceToggle`** — ปุ่มจำลองใบหน้าออกจากกรอบ
+  - แสดงเฉพาะ `kDebugMode` (debug build เท่านั้น)
+  - ใช้ TextButton เล็ก ๆ ใต้ info pill (ไม่ obtrusive)
+- บัมป์ pubspec version → `1.15.0+1` + อัปเดต `_versionUpdatedAt`
+- อัปเดต `implement-plan-ui.md` เพิ่ม Phase UI-6E ในตาราง
+
 ## [1.14.0] - 2026-04-30 (Phase UI-6D: TestResult Redesign จาก Design Update)
 
 ทีม Design ส่ง mockup TestResult screen สำหรับเคส face mismatch มาเพิ่ม

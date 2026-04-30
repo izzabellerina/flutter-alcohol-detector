@@ -5,14 +5,16 @@ import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 
-/// Mock camera preview พร้อมกรอบใบหน้า
-/// - Breathing pulse เมื่อ face in frame
-/// - Shake + แดงเมื่อ face out of frame
+/// "ภาพ" ของผู้ทดสอบขณะเป่า — กรอบรูปสไตล์ photo frame
+/// (Phase 5+ จะเปลี่ยนเป็น `CameraPreview` จริงพร้อม google_mlkit_face_detection)
+///
+/// - In-frame: กรอบบางสีน้ำเงินอ่อน (ตาม Design Update 2026-04-30)
+/// - Out-of-frame: กรอบแดง + warning badge + shake animation
 class FaceFramePreview extends StatefulWidget {
   const FaceFramePreview({
     super.key,
     required this.faceInFrame,
-    this.aspectRatio = 4 / 5,
+    this.aspectRatio = 4 / 3,
   });
 
   final bool faceInFrame;
@@ -23,17 +25,12 @@ class FaceFramePreview extends StatefulWidget {
 }
 
 class _FaceFramePreviewState extends State<FaceFramePreview>
-    with TickerProviderStateMixin {
-  late final AnimationController _pulseController;
+    with SingleTickerProviderStateMixin {
   late final AnimationController _shakeController;
 
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat(reverse: true);
     _shakeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
@@ -53,85 +50,76 @@ class _FaceFramePreviewState extends State<FaceFramePreview>
 
   @override
   void dispose() {
-    _pulseController.dispose();
     _shakeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final outOfFrame = !widget.faceInFrame;
     final borderColor =
-        widget.faceInFrame ? AppColors.success500 : AppColors.danger500;
+        outOfFrame ? AppColors.danger500 : AppColors.primary200;
+    final borderWidth = outOfFrame ? 3.0 : 2.0;
 
     return AspectRatio(
       aspectRatio: widget.aspectRatio,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.neutral900,
-          borderRadius: AppRadius.all(AppRadius.lg),
-          gradient: const RadialGradient(
-            center: Alignment.center,
-            radius: 1.0,
-            colors: [AppColors.neutral800, AppColors.neutral950],
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: AppRadius.all(AppRadius.lg),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // Mock camera silhouette
-              Center(
-                child: Icon(
-                  Icons.person,
-                  size: 160,
-                  color: Colors.white.withValues(alpha: 0.2),
-                ),
-              ),
-              // Animated face frame overlay
-              AnimatedBuilder(
-                animation: Listenable.merge([_pulseController, _shakeController]),
-                builder: (context, _) {
-                  final pulse = widget.faceInFrame
-                      ? 1.0 + (_pulseController.value * 0.04)
-                      : 1.0;
-                  final shake = widget.faceInFrame
-                      ? 0.0
-                      : (_shakeController.value - 0.5) * 16;
-                  return Transform.translate(
-                    offset: Offset(shake, 0),
-                    child: Transform.scale(
-                      scale: pulse,
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.xl),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: borderColor, width: 4),
-                            borderRadius: AppRadius.all(AppRadius.xl * 4),
-                            boxShadow: [
-                              BoxShadow(
-                                color: borderColor.withValues(alpha: 0.3),
-                                blurRadius: 24,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+      child: AnimatedBuilder(
+        animation: _shakeController,
+        builder: (context, child) {
+          final shake = outOfFrame
+              ? (_shakeController.value - 0.5) * 12
+              : 0.0;
+          return Transform.translate(
+            offset: Offset(shake, 0),
+            child: child,
+          );
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: AppColors.neutral200,
+            borderRadius: AppRadius.all(AppRadius.lg),
+            border: Border.all(color: borderColor, width: borderWidth),
+            boxShadow: outOfFrame
+                ? [
+                    BoxShadow(
+                      color: AppColors.danger500.withValues(alpha: 0.2),
+                      blurRadius: 16,
+                      spreadRadius: 1,
                     ),
-                  );
-                },
-              ),
-              // Warning overlay
-              if (!widget.faceInFrame)
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: AppSpacing.lg),
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
-                      opacity: 1.0,
+                  ]
+                : null,
+          ),
+          child: ClipRRect(
+            borderRadius: AppRadius.all(AppRadius.lg - 2),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Photo placeholder (mock — รอกล้องจริง)
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.neutral200,
+                        AppColors.neutral300,
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.person,
+                    size: 140,
+                    color: AppColors.neutral400.withValues(alpha: 0.5),
+                  ),
+                ),
+                // Warning overlay
+                if (outOfFrame)
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.md),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.md + 2,
@@ -142,7 +130,8 @@ class _FaceFramePreviewState extends State<FaceFramePreview>
                           borderRadius: AppRadius.all(AppRadius.pill),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.danger500.withValues(alpha: 0.5),
+                              color: AppColors.danger500
+                                  .withValues(alpha: 0.5),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -169,8 +158,8 @@ class _FaceFramePreviewState extends State<FaceFramePreview>
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
