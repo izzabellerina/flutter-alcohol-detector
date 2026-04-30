@@ -27,13 +27,12 @@ class StatusBadge extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm + 2,
-        vertical: AppSpacing.xs,
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs + 1,
       ),
       decoration: BoxDecoration(
         color: colors.bg,
         borderRadius: AppRadius.all(AppRadius.pill),
-        border: Border.all(color: colors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -68,45 +67,35 @@ class StatusBadge extends StatelessWidget {
     switch (v) {
       case StatusVariant.success:
         return const _BadgeColors(
-          bg: AppColors.success50,
+          bg: AppColors.success100,
           fg: AppColors.success700,
-          border: AppColors.success200,
         );
       case StatusVariant.warning:
         return const _BadgeColors(
           bg: AppColors.warning50,
           fg: AppColors.warning700,
-          border: AppColors.warning500,
         );
       case StatusVariant.danger:
         return const _BadgeColors(
           bg: AppColors.danger50,
           fg: AppColors.danger700,
-          border: AppColors.danger100,
         );
       case StatusVariant.info:
         return const _BadgeColors(
           bg: AppColors.info50,
           fg: AppColors.info700,
-          border: AppColors.info100,
         );
       case StatusVariant.neutral:
         return const _BadgeColors(
           bg: AppColors.neutral100,
           fg: AppColors.neutral600,
-          border: AppColors.neutral200,
         );
     }
   }
 }
 
 class _BadgeColors {
-  const _BadgeColors({
-    required this.bg,
-    required this.fg,
-    required this.border,
-  });
+  const _BadgeColors({required this.bg, required this.fg});
   final Color bg;
   final Color fg;
-  final Color border;
 }
