@@ -8,11 +8,38 @@
 ## [Unreleased]
 
 ### Planned
-- Phase UI-6C: Apply to screens (Home + screens อื่น ๆ ตาม design)
 - Phase UI-7: Accessibility & QA (a11y, contrast, font scaling, dark mode review)
 - Phase 6: เปลี่ยน Mock services เป็น implementation จริง
   (Bluetooth/USB, Camera+ML Kit, API)
 - Lottie animations (confetti for pass result, success checkmark)
+
+## [1.13.0] - 2026-04-30 (Phase UI-6C: Apply Design to Screens)
+
+### Changed
+- **HomeScreen** ยกเครื่องใหม่ทั้งหมด ตาม Design Update 2026-04-30:
+  - ใช้ `SuccessHeader` ที่บนสุด (gradient น้ำเงิน + วงกลมไอคอน + title + subtitle
+    + `BluetoothStatusIndicator` มุมขวา)
+  - Header content เปลี่ยน dynamically ตามสถานะ:
+    - Driver confirmed + alcohol connected → "พร้อมเริ่มการทดสอบ"
+    - มีเครื่องเชื่อมต่อบ้าง → "เชื่อมต่ออุปกรณ์สำเร็จ"
+    - ยังไม่มีอะไรเชื่อม → "ยินดีต้อนรับ"
+  - ใช้ `UserCard` แทน device cards เดิม
+    (avatar + greeting + info rows: วันที่ + เลขใบขับขี่)
+  - ปุ่มใช้ `AppButton` กับ `showChevron: true` ทั้งหมด:
+    - "เริ่มการทดสอบ" — primary น้ำเงิน + clipboard icon
+    - Card reader action — outlinePrimary (เชื่อมต่อ / ดึงข้อมูล ตาม state)
+    - Alcohol device — outlinePrimary (เชื่อมต่อ) / outlineDanger (เลิกเชื่อมต่อ)
+  - แสดง `ConnectedDeviceCard` ใต้ปุ่มเมื่อเชื่อมต่อเครื่องเป่าแล้ว
+  - คง entrance animations จาก UI-5 (staggered fade + slideY)
+  - ลบ `_DeviceCard`, `_DriverCard` ออก (แทนที่ด้วย widgets ใหม่)
+
+### Notes
+- Auth screens (Login/Forgot/OTP/Reset), Test screens (Ready/InProgress/Result),
+  DriverConfirmation — ใช้ palette ใหม่อยู่แล้วจาก UI-6A
+  (custom gradient buttons เปลี่ยนเป็นน้ำเงินอัตโนมัติ)
+- ปุ่ม "submit" ในหน้าเหล่านั้นไม่ได้ใส่ chevron — เก็บไว้สำหรับ navigation buttons
+  เท่านั้น (ตามใน Design)
+- บัมป์ pubspec version → `1.13.0+1` + อัปเดต `_versionUpdatedAt`
 
 ## [1.12.0] - 2026-04-30 (Phase UI-6B: Common Widgets ตาม Design ใหม่)
 
