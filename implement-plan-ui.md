@@ -312,6 +312,16 @@ class AppRadius {
 - WaveDivider (decorative)
 - ปุ่ม "ลองใหม่อีกครั้ง" (primary) + "ออกจากระบบ" (outline)
 
+#### UI-6E: TestInProgress Redesign (Design Update เพิ่มเติม 2026-04-30)
+ทีม Design ส่ง design TestInProgress screen 3 states:
+- Header น้ำเงิน + "เริ่มการทดสอบ" + power icon
+- Title text "เริ่มการเป่า..." / "กำลังเป่า..." (ใหญ่กว่าเดิม)
+- Progress ring (clean, ไม่มี wave rings)
+- Photo frame บางสีน้ำเงินอ่อน (แทนวงรีเขียวเด่น)
+- Info pill น้ำเงินอ่อน "(i) ให้นั่งอยู่ในกรอบ ตลอดเวลาทดสอบ"
+- Simplify FaceFramePreview style — เปลี่ยนจาก prominent face oval เป็น photo frame
+- ย้าย simulate face button เป็น `kDebugMode` only
+
 ### Phase UI-7: Accessibility & QA
 - Semantic labels
 - ตรวจ contrast ratio (WCAG AA)
@@ -381,7 +391,8 @@ assets/
 | UI-6B | Common widgets ตาม design ใหม่ | 1.5 | ✅ Done |
 | UI-6C | Apply to screens | 1.5 | ✅ Done |
 | UI-6D | TestResult redesign (design ส่งเพิ่ม) | 1 | ✅ Done |
+| UI-6E | TestInProgress redesign (design ส่งเพิ่ม) | 1 | ✅ Done |
 | UI-7 | Accessibility & QA | 2 | ⏳ |
-| **รวม** | | **~17.5 วัน** | |
+| **รวม** | | **~18.5 วัน** | |
 
 > หมายเหตุ: ประเมินสำหรับนักพัฒนา 1 คนทำเต็มเวลา; งานออกแบบ asset (logo, illustrations) แยกต่างหาก
