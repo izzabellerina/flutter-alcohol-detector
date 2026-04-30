@@ -188,7 +188,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   : Icons.cancel_outlined,
                               size: 20,
                               color: passwordsMatch
-                                  ? AppColors.primary500
+                                  ? AppColors.success500
                                   : AppColors.danger500,
                             ),
                           IconButton(

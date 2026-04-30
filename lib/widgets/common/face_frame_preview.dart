@@ -61,7 +61,7 @@ class _FaceFramePreviewState extends State<FaceFramePreview>
   @override
   Widget build(BuildContext context) {
     final borderColor =
-        widget.faceInFrame ? AppColors.primary500 : AppColors.danger500;
+        widget.faceInFrame ? AppColors.success500 : AppColors.danger500;
 
     return AspectRatio(
       aspectRatio: widget.aspectRatio,

@@ -68,9 +68,9 @@ class StatusBadge extends StatelessWidget {
     switch (v) {
       case StatusVariant.success:
         return const _BadgeColors(
-          bg: AppColors.primary50,
-          fg: AppColors.primary700,
-          border: AppColors.primary200,
+          bg: AppColors.success50,
+          fg: AppColors.success700,
+          border: AppColors.success200,
         );
       case StatusVariant.warning:
         return const _BadgeColors(

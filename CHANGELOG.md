@@ -8,10 +8,42 @@
 ## [Unreleased]
 
 ### Planned
-- Phase UI-6: Accessibility & QA (a11y, contrast, font scaling, dark mode review)
+- Phase UI-6B: Common widgets ตาม design ใหม่ (chevron buttons, SuccessHeader, UserCard, ConnectedDeviceCard)
+- Phase UI-6C: Apply to screens (Home + screens อื่น ๆ ตาม design)
+- Phase UI-7: Accessibility & QA (a11y, contrast, font scaling, dark mode review)
 - Phase 6: เปลี่ยน Mock services เป็น implementation จริง
   (Bluetooth/USB, Camera+ML Kit, API)
 - Lottie animations (confetti for pass result, success checkmark)
+
+## [1.11.0] - 2026-04-30 (Phase UI-6A: Palette Swap จาก Design Update)
+
+### Changed
+- **`AppColors` swap palette ตาม design ใหม่**:
+  - **Primary** (เดิม = เขียว `#22C55E`) → **น้ำเงิน `#2563EB`**
+    family ใหม่: primary50/100/200/500/600/700/800/900
+  - **Success** (ใหม่ — แยก namespace) → **เขียว** (ค่าเดิมของ primary)
+    family: success50/100/200/500/600/700/900
+  - Aliases: `primary` = primary500 (น้ำเงิน), `success` = success500 (เขียว),
+    `resultPass` = success500, `headerBar` = primary700
+  - `info` family ยังอยู่ (ใช้ shade เดียวกับ primary, backward-compat)
+- **Components ที่ใช้ "success" semantically — สลับมาใช้ success namespace**:
+  - `StatusBadge.success` variant (badge "เชื่อมต่อแล้ว", "ยืนยันแล้ว")
+  - `PasswordStrengthMeter` strong / veryStrong — เขียวบอกความแข็งแรง
+  - `TestResultScreen`:
+    - Pass result badge gradient (เขียว)
+    - Measurement card non-exceed text color
+    - Save status banner (เขียว "บันทึกผลทดสอบเรียบร้อย")
+  - `DriverConfirmationScreen` "อ่านบัตรสำเร็จ" pill badge
+  - `ResetPasswordScreen` check icon เมื่อรหัสผ่านตรงกัน
+  - `FaceFramePreview` border สีเขียวเมื่อใบหน้าอยู่ในกรอบ
+
+### Visual Impact
+- ปุ่มทุกหน้าจะเปลี่ยนเป็นน้ำเงินทันที (Login/Connect/Confirm/Start Test/Finish)
+- Logo gradient + Header gradient เปลี่ยนเป็นน้ำเงิน
+- Hero icons (TestReady, ForgotPassword, ResetPassword) เปลี่ยนเป็นน้ำเงิน
+- Step indicator + Auth background tint เปลี่ยนเป็นโทนน้ำเงิน
+- Badge / "ผ่าน" result / face frame / save status ยังเขียวตามเดิม
+- บัมป์ pubspec version → `1.11.0+1` + อัปเดต `_versionUpdatedAt`
 
 ## [1.10.0] - 2026-04-30 (Phase UI-5: Micro-interactions)
 

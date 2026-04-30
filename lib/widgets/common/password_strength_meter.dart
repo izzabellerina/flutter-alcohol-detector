@@ -95,13 +95,13 @@ class PasswordStrengthMeter extends StatelessWidget {
         );
       case PasswordStrength.strong:
         return const _Config(
-          color: AppColors.primary500,
+          color: AppColors.success500,
           label: 'แข็งแรง',
           filledSegments: 3,
         );
       case PasswordStrength.veryStrong:
         return const _Config(
-          color: AppColors.primary700,
+          color: AppColors.success700,
           label: 'แข็งแรงมาก',
           filledSegments: 4,
         );
