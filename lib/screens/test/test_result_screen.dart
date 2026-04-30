@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../controllers/device_controller.dart';
 import '../../controllers/test_controller.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_radius.dart';
@@ -11,169 +10,224 @@ import '../../core/theme/app_text_styles.dart';
 import '../../core/utils/date_formatter.dart';
 import '../../models/test_models.dart';
 import '../../routes/app_routes.dart';
-import '../../widgets/common/app_card.dart';
-import '../../widgets/common/app_header.dart';
-import '../../widgets/common/app_scaffold.dart';
+import '../../widgets/common/app_buttons.dart';
+import '../../widgets/common/app_footer.dart';
+import '../../widgets/common/wave_divider.dart';
 
 class TestResultScreen extends StatelessWidget {
   const TestResultScreen({super.key});
 
-  void _finish(BuildContext context) {
+  void _retry(BuildContext context) {
     context.read<TestController>().reset();
-    context.go(AppRoutes.home);
+    context.pushReplacement(AppRoutes.testReady);
+  }
+
+  void _logout(BuildContext context) {
+    context.read<TestController>().reset();
+    context.go(AppRoutes.login);
   }
 
   @override
   Widget build(BuildContext context) {
     final test = context.watch<TestController>();
-    final device = context.watch<DeviceController>();
     final result = test.result;
 
     if (result == null) {
-      return AppScaffold(
-        header: const AppHeader(greetingName: 'DEMO'),
+      return Scaffold(
+        appBar: AppBar(title: Text('ผลการทดสอบ', style: AppTextStyles.headingSmall)),
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxl),
-            child: Text(
-              'ไม่พบผลการทดสอบ',
-              style: AppTextStyles.bodyMedium,
-            ),
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: Text('ไม่พบผลการทดสอบ', style: AppTextStyles.bodyMedium),
           ),
         ),
       );
     }
 
-    return AppScaffold(
-      header: AppHeader(
-        greetingName: 'DEMO',
-        licenseNumber: device.confirmedDriver?.maskedLicenseNumber,
-        deviceId: device.alcoholState.device?.id,
-        title: 'ผลการทดสอบ',
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: AppSpacing.lg),
-          _ResultBadge(outcome: result.outcome),
-          const SizedBox(height: AppSpacing.lg),
-          if (result.failedFaceMismatch)
-            _FaceMismatchNote()
-          else
-            _MeasurementSummary(result: result),
-          const SizedBox(height: AppSpacing.md),
-          _ThresholdNote(threshold: result.threshold),
-          const SizedBox(height: AppSpacing.md),
-          _SaveStatusBanner(isSaving: test.isSaving),
-          const SizedBox(height: AppSpacing.xl),
-          _FinishButton(onPressed: () => _finish(context)),
-        ],
+    final passed = result.passed;
+    final faceMismatch = result.failedFaceMismatch;
+    final exceedThreshold = result.userMeasurement.value >= result.threshold;
+
+    return Scaffold(
+      backgroundColor: AppColors.surface,
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const _Header(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.xl,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _StatusIndicator(
+                      passed: passed,
+                      exceedThreshold: exceedThreshold,
+                      faceMismatch: faceMismatch,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    _BigNumber(
+                      value: result.userMeasurement.value,
+                      isFail: !passed,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    _ResultPhoto(passed: passed),
+                    const SizedBox(height: AppSpacing.lg),
+                    if (faceMismatch) ...[
+                      const _InfoPill(
+                        icon: Icons.badge_outlined,
+                        iconBg: AppColors.danger100,
+                        iconColor: AppColors.danger600,
+                        bg: AppColors.danger50,
+                        text: 'ใบหน้าไม่ตรงกับฐานข้อมูล',
+                        textColor: AppColors.danger700,
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                    ],
+                    _InfoPill(
+                      icon: Icons.edit_outlined,
+                      iconBg: AppColors.primary100,
+                      iconColor: AppColors.primary600,
+                      bg: AppColors.primary50,
+                      text:
+                          'ระดับการแจ้งเตือน ${result.threshold.toStringAsFixed(0)} mg%',
+                      textColor: AppColors.primary700,
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    _MeasurementColumns(result: result),
+                    const SizedBox(height: AppSpacing.lg),
+                    WaveDivider(
+                      color: passed
+                          ? AppColors.success500
+                          : AppColors.danger500,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    _SaveStatusBanner(isSaving: test.isSaving),
+                    const SizedBox(height: AppSpacing.md),
+                    AppButton.primary(
+                      label: 'ลองใหม่อีกครั้ง',
+                      icon: Icons.refresh,
+                      onPressed: () => _retry(context),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    AppButton.outlinePrimary(
+                      label: 'ออกจากระบบ',
+                      icon: Icons.logout,
+                      onPressed: () => _logout(context),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    const AppFooter(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-class _ResultBadge extends StatelessWidget {
-  const _ResultBadge({required this.outcome});
-
-  final TestOutcome outcome;
+class _Header extends StatelessWidget {
+  const _Header();
 
   @override
   Widget build(BuildContext context) {
-    final passed = outcome == TestOutcome.passed;
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.primary500, AppColors.primary700],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 40),
+              Expanded(
+                child: Text(
+                  'ผลการทดสอบ',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.headingSmall.copyWith(
+                    color: AppColors.textOnPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.logout, size: 22),
+                color: AppColors.textOnPrimary,
+                onPressed: () {
+                  context.read<TestController>().reset();
+                  context.go(AppRoutes.login);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusIndicator extends StatelessWidget {
+  const _StatusIndicator({
+    required this.passed,
+    required this.exceedThreshold,
+    required this.faceMismatch,
+  });
+
+  final bool passed;
+  final bool exceedThreshold;
+  final bool faceMismatch;
+
+  String get _label {
+    if (passed) return 'ผ่าน';
+    if (exceedThreshold) return 'แอลกอฮอล์เกินกำหนด';
+    if (faceMismatch) return 'ใบหน้าไม่ตรงกับระบบ';
+    return 'ไม่ผ่าน';
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final color = passed ? AppColors.success500 : AppColors.danger500;
-    final label = passed ? 'ผ่าน' : 'ไม่ผ่าน';
-    final icon = passed ? Icons.check_circle : Icons.cancel;
-    final caption = passed
-        ? 'พร้อมขับขี่ได้ — ขอให้เดินทางปลอดภัย'
-        : 'ไม่อนุญาตให้ขับขี่ — กรุณาพักรถ';
+    final icon = passed ? Icons.check : Icons.close;
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.6, end: 1.0),
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeOutBack,
-      builder: (context, scale, child) {
-        return Transform.scale(scale: scale, child: child);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.xl,
-          vertical: AppSpacing.xl,
-        ),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: passed
-                ? [AppColors.success500, AppColors.success700]
-                : [AppColors.danger500, AppColors.danger700],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: AppRadius.all(AppRadius.lg),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.4),
-              blurRadius: 24,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Icon(icon, size: 56, color: Colors.white),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              label,
-              style: AppTextStyles.resultLarge,
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              caption,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.white.withValues(alpha: 0.9),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _MeasurementSummary extends StatelessWidget {
-  const _MeasurementSummary({required this.result});
-
-  final TestResult result;
-
-  @override
-  Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Expanded(
-          child: _MeasurementCard(
-            label: 'อากาศ',
-            icon: Icons.air,
-            measurement: result.airMeasurement,
-            threshold: result.threshold,
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
           ),
+          alignment: Alignment.center,
+          child: Icon(icon, size: 22, color: AppColors.textOnPrimary),
         ),
-        const SizedBox(width: AppSpacing.md),
-        Expanded(
-          child: _MeasurementCard(
-            label: 'ผู้เป่า',
-            icon: Icons.face,
-            measurement: result.userMeasurement,
-            threshold: result.threshold,
+        const SizedBox(width: AppSpacing.sm + 2),
+        Flexible(
+          child: Text(
+            _label,
+            style: AppTextStyles.headingMedium.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],
@@ -181,144 +235,194 @@ class _MeasurementSummary extends StatelessWidget {
   }
 }
 
-class _MeasurementCard extends StatelessWidget {
-  const _MeasurementCard({
-    required this.label,
-    required this.icon,
-    required this.measurement,
-    required this.threshold,
-  });
+class _BigNumber extends StatelessWidget {
+  const _BigNumber({required this.value, required this.isFail});
 
-  final String label;
-  final IconData icon;
-  final TestMeasurement measurement;
-  final double threshold;
+  final double value;
+  final bool isFail;
 
   @override
   Widget build(BuildContext context) {
-    final exceed = measurement.value >= threshold;
-    final color = exceed ? AppColors.danger600 : AppColors.success700;
-    // bar value: relative to 2x threshold (full bar = 2 * threshold)
-    final barValue = (measurement.value / (threshold * 2)).clamp(0.0, 1.0);
-    // threshold line position (0.5 if 2x scale)
-    const thresholdPosition = 0.5;
+    final color = isFail ? AppColors.danger500 : AppColors.success500;
 
-    return AppCard(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
-                  borderRadius: AppRadius.all(AppRadius.sm),
-                ),
-                alignment: Alignment.center,
-                child: Icon(icon, size: 18, color: AppColors.textSecondary),
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.6, end: 1.0),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutBack,
+      builder: (context, scale, child) {
+        return Transform.scale(scale: scale, child: child);
+      },
+      child: Center(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              value.toStringAsFixed(0),
+              style: TextStyle(
+                fontSize: 96,
+                fontWeight: FontWeight.bold,
+                color: color,
+                height: 1,
               ),
-              const SizedBox(width: AppSpacing.sm),
-              Text(
-                label,
-                style: AppTextStyles.bodyMedium.copyWith(
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: Text(
+                'mg%',
+                style: AppTextStyles.headingLarge.copyWith(
+                  color: color,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            DateFormatter.formatThaiDateTimeFull(measurement.timestamp),
-            style: AppTextStyles.caption,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                measurement.value.toStringAsFixed(0),
-                style: AppTextStyles.measurement.copyWith(color: color),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                'mg%',
-                style: AppTextStyles.bodySmall.copyWith(color: color),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          // Mini bar with threshold line
-          SizedBox(
-            height: 8,
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.neutral100,
-                    borderRadius: AppRadius.all(AppRadius.pill),
-                  ),
-                ),
-                FractionallySizedBox(
-                  widthFactor: barValue,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: AppRadius.all(AppRadius.pill),
-                    ),
-                  ),
-                ),
-                // Threshold marker
-                Align(
-                  alignment: const Alignment(thresholdPosition * 2 - 1, 0),
-                  child: Container(
-                    width: 2,
-                    height: 14,
-                    color: AppColors.warning700,
-                  ),
-                ),
-              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _ThresholdNote extends StatelessWidget {
-  const _ThresholdNote({required this.threshold});
+class _ResultPhoto extends StatelessWidget {
+  const _ResultPhoto({required this.passed});
 
-  final double threshold;
+  final bool passed;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = passed ? AppColors.success500 : AppColors.danger500;
+    final label = passed ? 'ผ่าน' : 'ไม่ผ่าน';
+    final icon = passed ? Icons.check : Icons.close;
+
+    return AspectRatio(
+      aspectRatio: 4 / 3,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: AppRadius.all(AppRadius.lg),
+          border: Border.all(color: color, width: 4),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.2),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ClipRRect(
+              borderRadius: AppRadius.all(AppRadius.md),
+              child: Container(
+                color: AppColors.neutral200,
+                child: Center(
+                  child: Icon(
+                    Icons.person,
+                    size: 120,
+                    color: AppColors.neutral400,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: AppSpacing.md,
+              bottom: AppSpacing.md,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.xs + 2,
+                ),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: AppRadius.all(AppRadius.pill),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 22,
+                      height: 22,
+                      decoration: const BoxDecoration(
+                        color: AppColors.background,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Icon(icon, size: 16, color: color),
+                    ),
+                    const SizedBox(width: AppSpacing.xs + 2),
+                    Text(
+                      label,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textOnPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoPill extends StatelessWidget {
+  const _InfoPill({
+    required this.icon,
+    required this.iconBg,
+    required this.iconColor,
+    required this.bg,
+    required this.text,
+    required this.textColor,
+  });
+
+  final IconData icon;
+  final Color iconBg;
+  final Color iconColor;
+  final Color bg;
+  final String text;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
+        horizontal: AppSpacing.sm,
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: AppColors.warning50,
-        borderRadius: AppRadius.all(AppRadius.md),
-        border: Border.all(color: AppColors.warning500.withValues(alpha: 0.3)),
+        color: bg,
+        borderRadius: AppRadius.all(AppRadius.pill),
       ),
       child: Row(
         children: [
-          const Icon(
-            Icons.warning_amber_rounded,
-            size: 16,
-            color: AppColors.warning700,
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: iconBg,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Icon(icon, size: 16, color: iconColor),
           ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
-              'ระดับการแจ้งเตือน ${threshold.toStringAsFixed(0)} mg%',
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.warning700,
+              text,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: textColor,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -328,51 +432,92 @@ class _ThresholdNote extends StatelessWidget {
   }
 }
 
-class _FaceMismatchNote extends StatelessWidget {
+class _MeasurementColumns extends StatelessWidget {
+  const _MeasurementColumns({required this.result});
+
+  final TestResult result;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: AppColors.danger50,
-        border: Border.all(color: AppColors.danger100),
-        borderRadius: AppRadius.all(AppRadius.md),
-      ),
+    return IntrinsicHeight(
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppColors.danger100,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.face_retouching_off,
-              color: AppColors.danger600,
+          Expanded(
+            child: _MeasurementColumn(
+              label: 'อากาศ',
+              measurement: result.airMeasurement,
+              isFail: false,
+              threshold: result.threshold,
             ),
           ),
-          const SizedBox(width: AppSpacing.md),
+          const VerticalDivider(
+            color: AppColors.divider,
+            thickness: 1,
+            width: 1,
+          ),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'ใบหน้าไม่ตรงกับฐานข้อมูล',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.danger700,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'ไม่สามารถยืนยันตัวตนผู้เป่า กรุณาทดสอบใหม่',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.danger600,
-                  ),
-                ),
-              ],
+            child: _MeasurementColumn(
+              label: 'ผู้เป่า',
+              measurement: result.userMeasurement,
+              isFail: result.userMeasurement.value >= result.threshold,
+              threshold: result.threshold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MeasurementColumn extends StatelessWidget {
+  const _MeasurementColumn({
+    required this.label,
+    required this.measurement,
+    required this.isFail,
+    required this.threshold,
+  });
+
+  final String label;
+  final TestMeasurement measurement;
+  final bool isFail;
+  final double threshold;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isFail ? AppColors.danger500 : AppColors.textPrimary;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.headingSmall.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            DateFormatter.formatThaiDateTimeFull(measurement.timestamp),
+            style: AppTextStyles.caption,
+          ),
+          const SizedBox(height: AppSpacing.sm + 2),
+          Text(
+            measurement.value.toStringAsFixed(0),
+            style: TextStyle(
+              fontSize: 56,
+              fontWeight: FontWeight.bold,
+              color: color,
+              height: 1,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            'mg%',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -423,55 +568,3 @@ class _SaveStatusBanner extends StatelessWidget {
   }
 }
 
-class _FinishButton extends StatelessWidget {
-  const _FinishButton({required this.onPressed});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.primary500, AppColors.primary700],
-          ),
-          borderRadius: AppRadius.all(AppRadius.md),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary500.withValues(alpha: 0.3),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onPressed,
-            borderRadius: AppRadius.all(AppRadius.md),
-            child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.home_outlined,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    'จบการทดสอบ',
-                    style: AppTextStyles.button,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

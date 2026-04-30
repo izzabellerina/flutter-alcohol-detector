@@ -13,6 +13,38 @@
   (Bluetooth/USB, Camera+ML Kit, API)
 - Lottie animations (confetti for pass result, success checkmark)
 
+## [1.14.0] - 2026-04-30 (Phase UI-6D: TestResult Redesign จาก Design Update)
+
+ทีม Design ส่ง mockup TestResult screen สำหรับเคส face mismatch มาเพิ่ม
+— redesign หน้าผลการทดสอบทั้งหน้าให้ตรง:
+
+### Added
+- `WaveDivider` widget — เส้นแบ่งโค้งคลื่น (sine wave) ใช้ระหว่าง section
+  วาดด้วย CustomPainter
+
+### Changed
+- **TestController**: scenario `failFaceMismatch` ตอนนี้สร้าง user reading
+  เป็น 15-90 mg% (เดิมเป็น 0) — สะท้อนความจริงว่าเครื่องวัดได้แม้ใบหน้าไม่ตรง
+- **TestResultScreen** ยกเครื่องใหม่ทั้งหน้าตาม design:
+  - Header bar น้ำเงิน gradient + title "ผลการทดสอบ" + power icon
+  - **Status indicator**: วงกลม X/check + label
+    ("แอลกอฮอล์เกินกำหนด" / "ผ่าน" / "ใบหน้าไม่ตรงกับระบบ")
+  - **Big number** mg% ใหญ่มาก (96px) + scale animation
+  - **_ResultPhoto**: กรอบใหญ่สี (เขียว/แดง) + person silhouette
+    + badge "ผ่าน"/"ไม่ผ่าน" มุมล่างขวา
+  - **InfoPills** (pill-shape):
+    - "ใบหน้าไม่ตรงกับฐานข้อมูล" (แดง) — แสดงเมื่อ face mismatch
+    - "ระดับการแจ้งเตือน X mg%" (น้ำเงิน) — เสมอ
+  - **2 measurement columns**: "อากาศ \| ผู้เป่า" คั่นเส้นแนวตั้ง
+    แทนการ์ดแยกแบบเดิม
+  - **WaveDivider** สีตามผลลัพธ์
+  - ปุ่มเปลี่ยน:
+    - "ลองใหม่อีกครั้ง" (primary น้ำเงิน + refresh icon) → กลับไป TestReady
+    - "ออกจากระบบ" (outlinePrimary + logout icon) → กลับไป Login
+    (เดิมมีแค่ "จบการทดสอบ" → home)
+- บัมป์ pubspec version → `1.14.0+1` + อัปเดต `_versionUpdatedAt`
+- อัปเดต `implement-plan-ui.md` เพิ่ม Phase UI-6D ในตาราง
+
 ## [1.13.0] - 2026-04-30 (Phase UI-6C: Apply Design to Screens)
 
 ### Changed

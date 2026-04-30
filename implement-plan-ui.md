@@ -302,6 +302,16 @@ class AppRadius {
 - DriverConfirmation, TestReady, TestResult, Auth screens — ตรวจให้สอดคล้องกับ palette + button style ใหม่
 - ลบ gradient เขียวเก่าออก เปลี่ยนเป็น gradient น้ำเงินหรือ solid
 
+#### UI-6D: TestResult Redesign (Design Update เพิ่มเติม 2026-04-30)
+ทีม Design ส่ง design TestResult screen สำหรับเคส face mismatch มาเพิ่ม:
+- Status indicator (icon X + label) แทน gradient badge เดิม
+- Big mg% number (ใหญ่มาก, สีตามผลลัพธ์)
+- Photo frame + "ไม่ผ่าน" badge มุมล่างขวา
+- Info pills: ใบหน้าไม่ตรง (แดง) + ระดับแจ้งเตือน (น้ำเงิน)
+- 2 คอลัมน์ "อากาศ \| ผู้เป่า" คั่นเส้นแนวตั้ง
+- WaveDivider (decorative)
+- ปุ่ม "ลองใหม่อีกครั้ง" (primary) + "ออกจากระบบ" (outline)
+
 ### Phase UI-7: Accessibility & QA
 - Semantic labels
 - ตรวจ contrast ratio (WCAG AA)
@@ -367,10 +377,11 @@ assets/
 | UI-3 | Home & Driver | 2 | ✅ Done |
 | UI-4 | Test flow polish | 3 | ✅ Done |
 | UI-5 | Micro-interactions | 2 | ✅ Done |
-| UI-6A | Theme palette swap | 0.5 | 🔵 Next |
-| UI-6B | Common widgets ตาม design ใหม่ | 1.5 | ⏳ |
-| UI-6C | Apply to screens | 1.5 | ⏳ |
+| UI-6A | Theme palette swap | 0.5 | ✅ Done |
+| UI-6B | Common widgets ตาม design ใหม่ | 1.5 | ✅ Done |
+| UI-6C | Apply to screens | 1.5 | ✅ Done |
+| UI-6D | TestResult redesign (design ส่งเพิ่ม) | 1 | ✅ Done |
 | UI-7 | Accessibility & QA | 2 | ⏳ |
-| **รวม** | | **~16.5 วัน** | |
+| **รวม** | | **~17.5 วัน** | |
 
 > หมายเหตุ: ประเมินสำหรับนักพัฒนา 1 คนทำเต็มเวลา; งานออกแบบ asset (logo, illustrations) แยกต่างหาก
